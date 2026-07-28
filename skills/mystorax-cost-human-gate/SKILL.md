@@ -1,23 +1,24 @@
 ---
 name: mystorax-cost-human-gate
 description: >
-  MystoraX cost park and human-gate lifecycle — budget exhaust requires revise_scope or add_funds;
-  irreversible Hands need approval; expired/revoked/conflicted gates park/escalate (no hang).
+  MystoraX cost ceilings and human-in-the-loop gates — soft warn, hard halt/park,
+  HITL inject, certify approval. Use when budgets or approvals block progress.
 ---
 
-# MystoraX Cost + Human Gate
+# MystoraX Cost & Human Gates
 
 ## Cost
 
-- Soft-warn near ceiling; hard-halt parks the goal (`success: false`)
-- Resume only after **revise_scope** or **add_funds**
-- Durable ledger under Conductor `state/cost-ledger` — not `app/.data`
+- Soft warn may continue with `cost_soft_warn` metadata
+- Hard halt / park returns fail-closed HTTP (often 402) — do not retry blindly
+- Prefer lower effort or shorter goals after halt
 
-## Human gate
+## Human gates
 
-Statuses: pending | approved | expired | revoked | conflicted | parked | rejected
+- HITL inject: `metadata.hitl_inject` mid-run
+- Science CERTIFY: explicit `certify_approval` / operator record required
+- Author step ceiling: HTTP 409 — operator escalation required
 
-- Irreversible Hands require approved gate
-- Ignored/expired/revoked/conflicted → park + escalate (deterministic)
+## Never
 
-HTTP (host token): `/v1/goals/human_gate/*`, `/v1/goals/cost/*` (Round-9/10 routes).
+Bypass gates by switching fronts or inventing local compute.

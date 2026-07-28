@@ -1,7 +1,7 @@
 ---
 name: mystorax-capability-surfaces
 description: >
-  MystoraX surfaces catalog — wired / guided / inventory / refused / deferred capabilities.
+  MystoraX surfaces catalog — wired / guided / inventory / refused / deferred.
   Use mystorax_surfaces or mystorax_capability_lookup before claiming a feature exists.
 ---
 
@@ -17,9 +17,13 @@ description: >
 - `GET /v1/surfaces`
 - Routing guide embeds `capability_registry` (hard_refused + inventory_only)
 
-## Rules
+## Status meanings
 
-- **wired** = safe to use via Conductor
-- **inventory_only** = visible, not Hands-dispatchable
-- **refused** = HARD fail-closed — never fake success
-- Flags ≠ universal capability; compound kill-tests still bound claims
+| Status | Meaning |
+|--------|---------|
+| **wired** | Safe via Conductor |
+| **guided** | Documented path; follow guide |
+| **inventory** | Visible, not Hands-dispatchable |
+| **refused** | HARD fail-closed — never fake success |
+
+Flags ≠ universal capability. Compound kill-tests still bound claims.

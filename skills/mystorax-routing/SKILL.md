@@ -1,33 +1,36 @@
 ---
 name: mystorax-routing
 description: >
-  MystoraX routing doctrine — which bridge authors, Hands order, effort ladders, multi-step rules.
-  Use before choosing ChatGPT vs Perplexity vs Gemini vs Hands CLI for a MystoraX goal.
+  MystoraX routing doctrine — which author bridge, Hands lane, and effort to use.
+  Use before non-trivial goals; prefer mystorax_routing_guide over memory.
 ---
 
 # MystoraX Routing
 
-Call `mystorax_routing_guide` for the live SSoT. Summary:
+## Call first
+
+`mystorax_routing_guide` or `GET /v1/routing-guide`
 
 ## Authors
 
-| Bridge | Fast | Deep | Files |
-|--------|------|------|-------|
-| Perplexity | hard/web | research / deep-research | yes |
-| ChatGPT | auto / instant | thinking / pro (hours OK) | yes |
-| Gemini | Flash | Thinking/Pro | **no** |
+| Bridge | Fast | Deep | Files | Lead when |
+|--------|------|------|-------|-----------|
+| Perplexity | hard/web | research / deep-research | yes | citations, live web, hard+fast |
+| ChatGPT | auto / instant | thinking / pro (may take hours) | yes | multi-step projects, packages |
+| Gemini | Flash | Thinking / Pro | **no** | long-context text, failover |
 
-## Multi-step
+## Hands (thin only)
 
-- One bridge session for whole projects (dozens–200 steps)
-- Escalate ChatGPT depth before switching providers
-- Soft-warn ~150; ceiling ~200 → HTTP 409 `author_step_ceiling_reached`
+`gemini → copilot → codex → cursor-agent → claude`
 
-## Hands order
+No MCP/skills/plugins/agy as Hands. Missing CLIs are not capacity.
 
-`gemini → copilot → codex → cursor-agent → claude`  
-Skip missing binaries; never promote bridges to shell/write authority.
+## Effort
 
-## Job classes
+Conductor `effort` maps per worker (`native_depth`). Never invent shared model names across bridges.
 
-`research | coding | planning | science | ops | voice_frontdoor`
+## Anti-fragment
+
+Do not split whole-project work into tiny asks. Prefer 50–200+ steps in one author session.
+Escalate ChatGPT depth (auto→thinking→pro) before switching providers.
+Soft warn ~150 steps; ceiling ~200 → checkpoint; HTTP 409 at ceiling requires operator escalation.

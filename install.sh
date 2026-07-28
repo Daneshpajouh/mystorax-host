@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install MystoraX skills for every local front (Cursor, Claude Code, Codex).
-# ChatGPT / HTTP fronts use OpenAPI + Bearer — printed at end.
+# ChatGPT / HTTP / Claude Science GitHub import use FRONT_ONBOARD.md.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 CONDUCTOR_URL="${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}"
@@ -69,13 +69,17 @@ for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
     name="$(basename "$d")"
     rsync -a "$d/" "$base/$name/"
   done
-  # Drop renamed legacy skill if present
+  # Drop renamed legacy skills if present
   rm -rf "$base/mystorax-claude-science-onboard"
   echo "skills synced -> $base"
 done
+
+chmod +x "$ROOT/install.sh" "$ROOT/verify.sh" 2>/dev/null || true
 
 echo "host_token_set=$([[ -n "$TOKEN" ]] && echo yes || echo no)"
 echo "chatgpt_openapi=$CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml"
 echo "manifest=$CONDUCTOR_URL/v1/hosts/manifest"
 echo "front_onboard=see FRONT_ONBOARD.md (all fronts equal)"
+echo "verify=./verify.sh"
+echo "version=$(tr -d ' \n' < "$ROOT/VERSION" 2>/dev/null || echo unknown)"
 echo "done"

@@ -1,21 +1,25 @@
 ---
 name: mystorax-hard-refuses
 description: >
-  MystoraX HARD_REFUSED surfaces — Computer, ASI, agentic_research, Spark, local LLMs, agy execute.
-  Use whenever a user asks to enable those planes; refuse honestly and route to allowed authors/Hands.
+  MystoraX HARD_REFUSED capabilities — Computer, ASI, agentic research, Spark, local LLM,
+  agy execute. Always fail closed; never fake success on any front.
 ---
 
 # MystoraX Hard Refuses
 
-Always refuse and explain. Do not fake success.
+Fail closed. Do not soft-fallback into these.
 
-- perplexity.computer / ASI / agentic_research / computer_use
-- gemini.spark_launch / computer_use
-- local_llm (ollama, mlx, opencode, gemma)
-- agy.execute / agents / plugins
-- orchestrator.computer / asi / app.orchestrator
-- computer_engine / computer_router / mxp ASI
+## Refused surface ids (canonical)
 
-Inventory-only (visible, never dispatched as Hands): canvas, sora, music, spark_discovery, perplexity skills/workflows/artifacts/memory, agy inventory.
+- `perplexity.computer` / `perplexity.computer_use` / `perplexity.asi` / `perplexity.agentic_research`
+- `gemini.computer_use` / `gemini.spark_launch`
+- `local_llm` / `local_llm.ollama` / `local_llm.mlx` / `local_llm.gemma` / `local_llm.opencode`
+- `agy.execute` / `agy.agent` / `agy.agents` / `agy.plugin` / `agy.plugins`
 
-Source: Conductor `capability_registry` + `mystorax_routing_guide`.
+## Operator language that must refuse
+
+Computer Use, Tasks credits, ASI, agentic research, Spark launch, “run local LLM as Hands”, agy execute.
+
+## Check live
+
+`mystorax_surfaces` / `mystorax_capability_lookup` and routing guide `capability_registry.hard_refused`.

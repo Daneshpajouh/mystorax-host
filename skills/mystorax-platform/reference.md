@@ -1,37 +1,23 @@
-# Live Conductor snapshot (reference)
+# MystoraX platform reference (live endpoints)
 
-Generated from `mystorax_routing_guide`.
+Base: `https://mx.parallex.ca`
 
-```json
-{
-  "schema": "mystorax.routing_guide.v1",
-  "file_capable_bridges": [
-    "perplexity",
-    "chatgpt"
-  ],
-  "text_only_bridges": [
-    "gemini"
-  ],
-  "hands_order": [
-    "gemini",
-    "copilot",
-    "codex",
-    "cursor-agent",
-    "claude"
-  ],
-  "hard_refused_count": 22,
-  "science_max_auto_phase": "EVIDENCE",
-  "doctrine": {
-    "perplexity": "fast_hard_web_file_capable_multi_step",
-    "chatgpt": "fast_auto_instant_or_deep_thinking_pro_file_capable_multi_step_hours_ok",
-    "gemini": "text_long_context_no_files",
-    "science_os": "durable_multiphase_resume_stop_at_evidence_never_auto_certify",
-    "hands": "thin_apply_download_check_only_skip_unavailable",
-    "anti_fragment": "never_split_bridge_projects_into_tiny_asks",
-    "mcp": "fail_closed_until_MYSTORAX_AXIOM_MCP_TOKEN",
-    "front_agnostic": "http_ssot_plus_thin_conductor_mcp_plus_gateway_plugin",
-    "native_depth": "conductor_effort_maps_per_worker_never_shared_names"
-  },
-  "capability_registry_note": "Enforcement source for conductor routing/CI. No local LLMs. Agy is inventory-only (no Hands WorkerKind)."
-}
-```
+| Purpose | Method | Path |
+|---------|--------|------|
+| Health | GET | `/health` |
+| Hosts manifest | GET | `/v1/hosts/manifest` |
+| Routing guide | GET | `/v1/routing-guide` |
+| Surfaces | GET | `/v1/surfaces` |
+| Submit goal | POST | `/v1/goal` |
+| Job status | GET | `/v1/jobs/{job_id}/status` |
+| Wait SSE | GET | `/v1/waits/{wait_id}/stream` |
+| MCP tools | GET | `/v1/hosts/mcp/tools` |
+| MCP call | POST | `/v1/hosts/mcp/tools/call` |
+| ChatGPT OpenAPI | GET | `/v1/hosts/chatgpt/openapi.yaml` |
+| Axiom status | GET | `/v1/axiom/status` |
+
+Auth on writes: `Authorization: Bearer $MYSTORAX_HOST_TOKEN`.
+
+Doctrine version (manifest): `mystorax.front_agnostic.v1`.
+
+Re-fetch routing guide when unsure — do not rely on this file alone.

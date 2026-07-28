@@ -1,7 +1,7 @@
 {
   "name": "mystorax-skills",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Front-agnostic MystoraX Conductor skills and MCP gateway for any host.",
-  "author": {"name": "MystoraX"},
+  "author": { "name": "MystoraX" },
   "keywords": ["mystorax", "conductor", "mcp", "front-agnostic"]
 }

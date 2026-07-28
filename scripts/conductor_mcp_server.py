@@ -24,7 +24,7 @@ import urllib.request
 from typing import Any
 
 SERVER_NAME = "mystorax-conductor"
-SERVER_VERSION = "0.2.0"
+SERVER_VERSION = "1.2.0"
 PROTOCOL_VERSION = "2024-11-05"
 
 

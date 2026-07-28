@@ -1,8 +1,8 @@
 # MystoraX Conductor — connector recipe (any front)
 
-Same SSoT for every host UI (Cursor, Claude Code, Claude Science, Codex, ChatGPT, custom).
+Same SSoT for every host UI. Pick a transport — doctrine does not change.
 
-## A — MCP stdio (Cursor / Claude Code / Codex)
+## A — MCP stdio (Cursor / Claude Code / Codex / local agents)
 
 Pack `.mcp.json` → server **`mystorax-conductor`** (stdio → Conductor HTTP).  
 `./install.sh` rewrites absolute server path and injects `MYSTORAX_HOST_TOKEN` from env or `~/.mystorax/secrets/host_ingress_token`.
@@ -20,19 +20,36 @@ Pack `.mcp.json` → server **`mystorax-conductor`** (stdio → Conductor HTTP).
 | `mystorax_axiom_tool_search` | Allowlisted bio search |
 | `mystorax_axiom_tool_call` | Fail-closed bio call |
 
-## B — HTTP (any custom connector / curl)
+HTTP equivalents (same names):
+
+```bash
+GET  $MYSTORAX_CONDUCTOR_URL/v1/hosts/mcp/tools
+POST $MYSTORAX_CONDUCTOR_URL/v1/hosts/mcp/tools/call
+# body: {"name":"mystorax_routing_guide","arguments":{}}
+```
+
+## B — OpenAPI (ChatGPT Actions / compatible clients)
+
+| Field | Value |
+|-------|--------|
+| Spec | `https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml` |
+| Auth | Bearer `MYSTORAX_HOST_TOKEN` |
+| First calls | routing guide → surfaces → submit goal |
+
+## C — Raw HTTP (curl / custom)
 
 | Field | Value |
 |-------|--------|
 | Base | `https://mx.parallex.ca` |
 | Auth | Bearer `MYSTORAX_HOST_TOKEN` |
-| OpenAPI | `GET /v1/hosts/chatgpt/openapi.yaml` |
-| MCP list | `GET /v1/hosts/mcp/tools` |
-| MCP call | `POST /v1/hosts/mcp/tools/call` |
 | Goal | `POST /v1/goal` |
 | Manifest | `GET /v1/hosts/manifest` |
+| Routing | `GET /v1/routing-guide` |
+| Surfaces | `GET /v1/surfaces` |
+| Job status | `GET /v1/jobs/{job_id}/status` |
+| Wait SSE | `GET /v1/waits/{wait_id}/stream` |
 
-## C — Axiom bio (separate pack)
+## D — Axiom bio (separate pack)
 
 `https://axiom-mcp.parallex.ca/mcp` via **axiom-science-os**. Orthogonal to Conductor host ingress.
 
@@ -40,3 +57,4 @@ Pack `.mcp.json` → server **`mystorax-conductor`** (stdio → Conductor HTTP).
 
 - Commit tokens into connector JSON
 - Point connectors at Computer / ASI / local LLM endpoints
+- Treat any single front as the platform

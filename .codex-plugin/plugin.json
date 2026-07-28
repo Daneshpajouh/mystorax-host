@@ -1,6 +1,6 @@
 {
   "name": "mystorax-skills",
-  "version": "1.1.0",
-  "description": "Front-agnostic MystoraX Conductor skills for Codex and any MCP host.",
-  "author": {"name": "MystoraX"}
+  "version": "1.2.0",
+  "description": "Front-agnostic MystoraX Conductor skills for Codex and peer fronts.",
+  "author": { "name": "MystoraX" }
 }

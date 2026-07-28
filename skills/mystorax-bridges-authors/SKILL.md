@@ -1,24 +1,26 @@
 ---
 name: mystorax-bridges-authors
 description: >
-  MystoraX bridge authors — ChatGPT, Perplexity, Gemini CDP/cookie lanes via Conductor.
-  Use when choosing author depth, file capability, or failover between bridges.
+  MystoraX author bridges — ChatGPT, Perplexity, Gemini roles and file rules.
+  Use when choosing which bridge should author a goal.
 ---
 
-# MystoraX Bridge Authors
+# MystoraX Bridges (authors)
 
-Bridges **author**; Hands **apply**. Prefer `mystorax_submit_goal` so Conductor owns routing/failover.
+Bridges **author**. Hands **apply**. Fronts never talk to bridge URLs directly — use Conductor.
 
-| Bridge | Strength | Files | Notes |
+| Bridge | Strength | Files | Avoid |
 |--------|----------|-------|-------|
-| Perplexity | Web, citations, hard+fast | yes | Research modes |
-| ChatGPT | Multi-step packages, excellence | yes | Escalate auto→thinking→pro |
-| Gemini | Long context, text failover | **no** | Never file packages |
+| Perplexity | Hard web, citations, research modes | yes | Computer / ASI / agentic_research |
+| ChatGPT | Multi-step packages, excellence, long thinking | yes | Treating connectors as unbounded SSoT |
+| Gemini | Long context, multimodal text | **no** | File packages, Computer Use, Spark |
 
-## Failover
+## Modes (hints via bridge_opts)
 
-Conductor may reroute when a bridge is down — do not invent parallel unofficial endpoints.
+- Perplexity: `auto` / `research` / `deep-research` / `pro` — never Computer
+- ChatGPT: `auto` / thinking / pro — escalate before switch
+- Gemini: text modes only
 
-## Attachments
+## Sources
 
-ChatGPT + Perplexity support attachments/file packages. Gemini does not.
+Perplexity: see `mystorax-perplexity-sources`. Default web-only.

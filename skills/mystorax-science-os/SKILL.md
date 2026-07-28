@@ -1,27 +1,29 @@
 ---
 name: mystorax-science-os
 description: >
-  MystoraX Science OS (Axiom campaigns) via Conductor — status, budgeted resume, allowlisted axiom tool proxy.
-  Use for genomics/protein/campaign DEFINE→CERTIFY work. Auto-resume stops at EVIDENCE; never auto-CERTIFY.
+  MystoraX Science OS campaigns — durable DEFINE→CERTIFY with budgeted resume.
+  Auto-resume stops at EVIDENCE; never auto-CERTIFY. Works on every front.
 ---
 
 # MystoraX Science OS
 
-## Sequence
+## Spine
 
-1. `mystorax_science_status`
-2. `mystorax_submit_goal` with `job_class=science` (or resume existing campaign)
-3. `mystorax_science_resume` — `max_phases` default 1, `max_auto_phase=EVIDENCE`
-4. Bio tools: `mystorax_axiom_tool_search` → `mystorax_axiom_tool_call` (Conductor allowlist; fail-closed without Conductor-side token)
+Durable campaign state. Bridges author phase material into checkpoints with
+`(phase_id, artifact_type, content_hash, step_count, gate_status)`.
 
-## Bounds
+## Tools
 
-- Auto-advance through **EVIDENCE** only
-- KILL_TEST → CERTIFY needs explicit operator/MCP approval
-- Never silently downgrade SCIENCE to ordinary research
-- Checkpoint shape: `(phase_id, artifact_type, content_hash, step_count, gate_status)`
+- `mystorax_science_status`
+- `mystorax_science_resume` — advances up to `max_phases` (default 1) through PRIOR_ART→EVIDENCE
 
-## With any science front
+## Locked gates
 
-Use Conductor Science OS tools regardless of UI (Claude Science specialist, Cursor, Codex, …).  
-Auto-resume stops at **EVIDENCE**; never auto-CERTIFY.
+- Auto-resume **stops at EVIDENCE** (`max_auto_phase`)
+- Never auto-CERTIFY
+- Past EVIDENCE (KILL_TEST→CERTIFY) needs explicit operator approval (approver, rationale, content_hash, gate)
+- Do not silently drop SCIENCE into ordinary research on failure — mark degraded
+
+## Bio MCP
+
+`mystorax_axiom_tool_search` / `mystorax_axiom_tool_call` — allowlisted; fail closed until Conductor has axiom token. Optional pair pack: `axiom-science-os`.

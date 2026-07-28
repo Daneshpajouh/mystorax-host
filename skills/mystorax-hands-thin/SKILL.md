@@ -1,8 +1,8 @@
 ---
 name: mystorax-hands-thin
 description: >
-  MystoraX thin Hands CLIs — gemini, copilot, codex, cursor-agent, claude apply/download/check only.
-  Use after bridges author artifacts; never treat Hands as planners or agentic shells.
+  MystoraX Hands are thin CLIs only — apply, download, check. Never use MCP, skills,
+  plugins, or agy agents as Hands. Use after bridge-authored artifacts.
 ---
 
 # MystoraX Hands (thin)
@@ -11,14 +11,21 @@ description: >
 
 `gemini → copilot → codex → cursor-agent → claude`
 
+Skip unavailable lanes (fail closed per lane). Live probe: `GET /v1/hosts/manifest` → `hands_health`.
+
 ## Allowed
 
-apply_patch, download_artifact, verify_tests, git_status/diff, smoke_check, read_file
+- Apply authored patches / packages
+- Download artifacts
+- Light shell checks / verify markers
 
-## Not Hands
+## Forbidden as Hands
 
-MCP skills, plugins, agy agents, Computer, arbitrary shell, secret exfil.
+- MCP tools / skills / plugins as apply plane
+- `agy` agents / execute
+- Silent bridge apply/shell
+- Inventing local LLM “Hands”
 
-## Health
+## After failure
 
-`GET /v1/hosts/manifest` → `hands_health`. Missing CLIs are skipped (fail closed per lane).
+If no Hands remain: author-bridge completion or explicit terminal failure — bridges do not silently gain write authority.
