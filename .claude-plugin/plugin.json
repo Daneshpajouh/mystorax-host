@@ -1,0 +1,9 @@
+{
+  "name": "mystorax-skills",
+  "version": "1.1.0",
+  "description": "Front-agnostic MystoraX Conductor skills for any host (Cursor, Claude Code, Claude Science, Codex, ChatGPT, HTTP).",
+  "author": {"name": "Daneshpajouh"},
+  "repository": "https://github.com/Daneshpajouh/mystorax-skills",
+  "license": "Apache-2.0",
+  "keywords": ["mystorax", "conductor", "mcp", "front-agnostic", "science-os"]
+}

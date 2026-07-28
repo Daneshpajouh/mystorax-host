@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mystorax-conductor": {
+      "command": "python3",
+      "args": ["./scripts/conductor_mcp_server.py"],
+      "env": {
+        "MYSTORAX_CONDUCTOR_URL": "https://mx.parallex.ca"
+      }
+    }
+  }
+}
