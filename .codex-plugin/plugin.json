@@ -1,7 +1,7 @@
 {
   "name": "mystorax-host",
-  "version": "2.0.0",
-  "description": "Installable MystoraX host package \u2014 Conductor plugin, MCP, OpenAPI connector, and doctrine for any front.",
+  "version": "2.0.1",
+  "description": "Installable front-agnostic MystoraX host package with Conductor skills, lead agent, and thin MCP facade.",
   "author": {
     "name": "MystoraX"
   },
