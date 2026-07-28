@@ -1,39 +1,46 @@
 ---
 name: mystorax-perplexity-sources
 description: >
-  Select Perplexity ask sources via Conductor bridge_opts/metadata. Default web-only
-  (blocks Notion leak). Prefer academic, github, huggingface, cloudflare when needed.
+  Select Perplexity sources through Conductor bridge_opts.sources or
+  metadata.sources. Default to web-only and keep Notion opt-in.
 ---
 
 # MystoraX Perplexity Sources
 
 ## Default
 
-`sources: ["web"]` — public web only. Organization connectors (e.g. Notion) stay off unless selected.
+Omit the source list, or use `sources: ["web"]`, for public web-only research. Organization connectors such as Notion stay off unless explicitly selected.
 
-## Preferred selectors
+## Selectors
 
-| Id | Aliases |
-|----|---------|
+| Canonical | Accepted alias |
+|---|---|
+| `web` | internet |
 | `academic` | scholar, scholarly, papers |
 | `github` | gh |
-| `huggingface` | hf, hugging_face |
-| `cloudflare` | cf |
-| `web` | internet |
-| `notion` | notion (opt-in only) |
+| `huggingface` | `hf`, hugging_face |
+| `cloudflare` | `cf` |
+| `notion` | notion, opt-in only |
 
-## How to pass
+## Request shape
 
 ```json
 {
   "worker": "perplexity",
-  "bridge_opts": { "sources": ["academic", "github"], "mode": "research" },
-  "metadata": { "prefer": "perplexity", "sources": ["academic", "github"] }
+  "bridge_opts": {
+    "sources": ["academic", "github"]
+  },
+  "metadata": {
+    "sources": ["academic", "github"]
+  }
 }
 ```
 
-Academic in sources also sets search focus to academic when unset.
+Use either location when the host supports only one. When both are present, keep them consistent.
 
-## Refused
+## Boundaries
 
-Never pass `computer`, `computer_use`, `asi`, `tasks`, or agentic research as sources — burns paid Computer credits; Conductor/bridges fail closed.
+- Do not turn on Notion by default.
+- Do not pass unsupported source names.
+- Do not use Computer, computer-use, ASI, Tasks, Tasks credits, or agentic research as sources or modes.
+- Preserve the selected source list in the goal metadata and handoff.
