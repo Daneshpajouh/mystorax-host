@@ -1,7 +1,7 @@
 {
   "name": "mystorax-host",
   "version": "2.0.1",
-  "description": "Installable front-agnostic MystoraX host package with Conductor skills, lead agent, and thin MCP facade.",
+  "description": "Installable front-agnostic MystoraX host package with Conductor doctrine modules, lead agent, and thin MCP facade.",
   "author": {
     "name": "MystoraX"
   },
