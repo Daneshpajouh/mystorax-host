@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install the full MystoraX host package on every local front.
-# Components: Cursor/Claude/Codex plugins, skills, rules, commands, MCP, OpenAPI notes.
+# Components: Cursor/Claude/Codex plugins, doctrine modules, rules, commands, MCP, OpenAPI.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 CONDUCTOR_URL="${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}"
@@ -35,7 +35,7 @@ mkdir -p "$(dirname "$CURSOR_DST")"
 rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CURSOR_DST/"
 mcp_cfg_json > "$CURSOR_DST/.mcp.json"
 echo "cursor_plugin=$CURSOR_DST"
-# Drop legacy skills-named install
+# Drop legacy product name install
 rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"
 
 # Also install as mystorax-gateway alias (older Settings / manifests)
@@ -84,7 +84,7 @@ user_mcp.write_text(json.dumps(data, indent=2) + "\n")
 print("registered", user_mcp)
 PY
 
-# --- Claude Code + Codex skills ---
+# --- Doctrine modules (Agent Skills wire format for Claude/Codex dirs) ---
 for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
   mkdir -p "$base"
   for d in "$ROOT"/skills/*; do
@@ -93,7 +93,7 @@ for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
     rsync -a "$d/" "$base/$name/"
   done
   rm -rf "$base/mystorax-claude-science-onboard"
-  echo "skills synced -> $base"
+  echo "doctrine_modules -> $base"
 done
 
 # Claude plugin dir (optional --plugin-dir)

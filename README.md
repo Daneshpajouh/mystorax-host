@@ -1,12 +1,12 @@
 # MystoraX Host Package
 
-Installable **MystoraX** integration for every front: plugin + MCP + OpenAPI connector + doctrine + portable skill modules.
+Installable **MystoraX host package** for every front: plugins + MCP + OpenAPI connector + doctrine modules + HTTP.
 
 **MystoraX** is the product. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
 
 | Component | What you get |
 |-----------|----------------|
-| **Cursor plugin** | Rules, agents, commands, skill modules, MCP |
+| **Cursor plugin** | Rules, agents, commands, doctrine modules, MCP |
 | **Claude plugin** | Plugin dir + marketplace entry + MCP |
 | **Codex plugin** | Plugin + MCP |
 | **MCP connector** | `mystorax-conductor` stdio (`pip install -e .`) |

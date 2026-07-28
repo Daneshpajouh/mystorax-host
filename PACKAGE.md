@@ -11,7 +11,7 @@ Product: **mystorax-host** (not a skills-only repo).
 | `.mcp.json` | MCP wiring | Cursor, Claude, Codex |
 | `rules/` | Always-on doctrine | Cursor |
 | `commands/` | Slash commands | Cursor, Claude |
-| `skills/` | Portable skill modules (one component) | Skill-capable fronts |
+| `skills/` | Doctrine modules (Agent Skills wire format — not the product name) | Cursor / Claude / Codex |
 | `agents/` | Platform lead | Cursor, Claude, Codex |
 | `scripts/conductor_mcp_server.py` | MCP server | MCP fronts |
 | `python/mystorax_conductor_mcp/` | pip MCP connector | Any Python host |
