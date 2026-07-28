@@ -1,56 +1,67 @@
-# MystoraX Skills
+# MystoraX Host Package
 
-Front-agnostic skills, MCP facade, and connector recipes for **MystoraX Conductor**.
+**Installable** front-agnostic package for MystoraX Conductor: plugins + skills + rules + commands + MCP server + OpenAPI/Actions connector.
 
-**MystoraX** is the platform. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and direct HTTP are **peer fronts** — equal, interchangeable, none owns doctrine.
+**MystoraX** is the platform. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
 
-Capability lives on Conductor HTTP: `https://mx.parallex.ca`. This pack teaches discovery + locked doctrine. It does not invent bridges or Hands authority.
+| Component | What you get |
+|-----------|----------------|
+| **Cursor plugin** | Skills, rules, agents, slash commands, MCP |
+| **Claude plugin** | Skills + MCP + marketplace entry + `claude --plugin-dir` |
+| **Codex plugin** | Skills + MCP |
+| **MCP server** | `mystorax-conductor` stdio facade (also `pip install -e .`) |
+| **OpenAPI connector** | ChatGPT Actions (`openapi/conductor.openapi.yaml` + live URL) |
+| **HTTP connector** | Raw curl / custom clients (`connectors/`) |
+| **Verify / uninstall** | `./verify.sh` · `./uninstall.sh` |
 
-Optional bio catalog: [`Daneshpajouh/axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) — orthogonal; never replaces Conductor ingress.
+Capability lives on Conductor: `https://mx.parallex.ca`.
 
-## Discovery contract (every front)
+Repo: [`Daneshpajouh/mystorax-skills`](https://github.com/Daneshpajouh/mystorax-skills) · Version [`VERSION`](VERSION)
 
-1. `mystorax_routing_guide` — or `GET /v1/routing-guide`
-2. `mystorax_surfaces` — or `GET /v1/surfaces`
-3. Prefer `mystorax_submit_goal` — or `POST /v1/goal`
-4. Long jobs: `mystorax_job_status` / wait-wake SSE — do not burn CLI tokens waiting
+Optional bio pack: [`axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) (orthogonal).
 
-Cold bootstrap (no MCP): `GET https://mx.parallex.ca/v1/hosts/manifest`
+## One-command install
 
-## Install matrix
+```bash
+git clone https://github.com/Daneshpajouh/mystorax-skills.git
+cd mystorax-skills
+export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
+export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
+./install.sh
+./verify.sh
+```
 
-| Front | How |
-|-------|-----|
-| **HTTP / any agent** | Bearer `MYSTORAX_HOST_TOKEN` + endpoints above |
-| **Cursor** | `./install.sh` → local plugin + `~/.cursor/mcp.json` |
-| **Claude Code** | `./install.sh` → `~/.claude/skills` + MCP; or `claude --plugin-dir .` |
-| **Claude Science** | Skills → Import from GitHub → `Daneshpajouh/mystorax-skills` (equal peer) |
-| **Codex** | `./install.sh` → `~/.codex/skills` + MCP |
-| **ChatGPT** | Import OpenAPI `https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml` |
-| **Gemini as UI** | Text goals only via Conductor; files still need ChatGPT/Perplexity authors |
-| **Custom MCP / OpenAPI** | See `connectors/mystorax-conductor.md` |
+Claude Science: Skills → Import from GitHub → `Daneshpajouh/mystorax-skills` (equal peer).  
+ChatGPT: Import OpenAPI → see `connectors/chatgpt-actions.md`.
 
-Equal-weight steps: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md). Agent contract: [`AGENTS.md`](AGENTS.md).
+## Discovery (every front)
 
-## Skills
+1. `mystorax_routing_guide` / `GET /v1/routing-guide`
+2. `mystorax_surfaces` / `GET /v1/surfaces`
+3. `mystorax_submit_goal` / `POST /v1/goal`
+4. Cold bootstrap: `GET /v1/hosts/manifest`
 
-| Skill | Purpose |
-|-------|---------|
-| `mystorax-platform` | Umbrella doctrine |
-| `mystorax-routing` | Authors / Hands / effort / anti-fragment |
-| `mystorax-submit-goal` | Main ingress |
-| `mystorax-author-session` | One multi-step session; escalate before switch |
-| `mystorax-bridges-authors` | ChatGPT / Perplexity / Gemini roles |
-| `mystorax-perplexity-sources` | Source pin: web default; academic/github/hf/cf |
-| `mystorax-hands-thin` | Apply/download/check only |
-| `mystorax-hard-refuses` | Computer / ASI / local LLM / Spark / agy |
-| `mystorax-science-os` | Campaigns; stop at EVIDENCE |
-| `mystorax-wait-wake` | Durable long jobs |
-| `mystorax-cost-human-gate` | Budget park + human gates |
-| `mystorax-connectors-credentials` | Tokens + connectors (no secrets in git) |
-| `mystorax-front-onboard` | Onboard **any** front |
-| `mystorax-hosts-manifest` | Live manifest / Hands health |
-| `mystorax-capability-surfaces` | Surfaces catalog |
+## Package layout
+
+```
+.cursor-plugin/     Cursor manifest (skills, rules, commands, agents, MCP)
+.claude-plugin/     Claude plugin + marketplace.json
+.codex-plugin/      Codex manifest
+.mcp.json           MCP stdio entry
+rules/              Always-on doctrine
+commands/           Slash commands
+skills/             Portable SKILL.md set
+agents/             Platform lead agent
+connectors/         MCP + OpenAPI + HTTP recipes
+openapi/            Conductor OpenAPI snapshot
+python/             pip package mystorax-conductor-mcp
+scripts/            MCP server + OpenAPI refresh
+install.sh          Full local install
+uninstall.sh        Remove local install
+verify.sh           Live smoke
+AGENTS.md           Agent contract
+FRONT_ONBOARD.md    Equal onboard for every front
+```
 
 ## Doctrine (locked)
 
@@ -61,18 +72,15 @@ Equal-weight steps: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md). Agent contract: [`AG
 | Gemini | Text / long-context only |
 | Hands | Thin `gemini → copilot → codex → cursor-agent → claude` |
 | Science | Auto-stop at **EVIDENCE**; never auto-CERTIFY |
-| Authors | Prefer one long session (50–200+ steps); escalate depth before provider switch |
-| Perplexity sources | Default `web`; select `academic` / `github` / `huggingface` / `cloudflare` |
-| Refuse | Computer / ASI / agentic_research / Spark / local LLMs / agy execute |
+| Authors | One long session; escalate before provider switch |
+| Sources | Perplexity default `web`; select academic/github/hf/cf |
+| Refuse | Computer / ASI / agentic_research / Spark / local LLM / agy |
 | Secrets | Never commit tokens |
 
-## Quick install
+## Docs
 
-```bash
-export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
-export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
-./install.sh
-./verify.sh
-```
-
-Pack version: see [`VERSION`](VERSION).
+- [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) — per-front install
+- [`AGENTS.md`](AGENTS.md) — operator contract
+- [`PACKAGE.md`](PACKAGE.md) — component matrix
+- [`connectors/mystorax-conductor.md`](connectors/mystorax-conductor.md) — MCP / HTTP
+- [`connectors/chatgpt-actions.md`](connectors/chatgpt-actions.md) — Actions

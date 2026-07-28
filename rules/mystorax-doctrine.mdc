@@ -1,0 +1,15 @@
+---
+description: MystoraX Conductor doctrine — every front is thin; HTTP SSoT; hard refuses.
+alwaysApply: true
+---
+
+# MystoraX doctrine (always on)
+
+- Prefer Conductor `POST /v1/goal` / `mystorax_submit_goal` over bridges or CLIs.
+- Discover: routing guide → surfaces → submit goal. Bootstrap: `GET /v1/hosts/manifest`.
+- Files: ChatGPT or Perplexity only. Gemini text-only.
+- Hands: thin apply/download/check — `gemini → copilot → codex → cursor-agent → claude`.
+- Multi-step work stays in ONE author session (50–200+ steps). Escalate before switch.
+- Science auto-resume stops at EVIDENCE. Never auto-CERTIFY.
+- HARD refuse: Computer / ASI / agentic_research / Spark / local LLM / agy execute.
+- No secrets in git. No invented bridge URLs. No front owns doctrine.

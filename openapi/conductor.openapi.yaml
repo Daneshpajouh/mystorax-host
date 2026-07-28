@@ -1,0 +1,177 @@
+openapi: 3.1.0
+info:
+  title: MystoraX Conductor
+  version: "0.3.0"
+  description: |
+    Front-agnostic Actions / OpenAPI door into MystoraX Conductor.
+    HTTP is the SSoT; Conductor MCP is a thin facade over the same endpoints.
+    Coding doctrine: bridges (ChatGPT / Perplexity) own multi-step code
+    authorship in one session (packages, iteration, often 100–200+ steps).
+    Do not send tiny one-step coding asks. CLIs only download/apply and run
+    light local checks. Gemini is text-only (no file packages).
+    Science: durable campaigns; auto-resume stops at EVIDENCE; never auto-CERTIFY.
+    Map ChatGPT Intelligence UI to conductor effort:
+      Instant / Light -> effort=low
+      Standard / Medium -> effort=medium
+      Extended / High / Thinking -> effort=high
+      Heavy / Pro / xhigh -> effort=xhigh
+    Discovery: call getRoutingGuide + listSurfaces before inventing routes.
+servers:
+  - url: https://mx.parallex.ca
+paths:
+  /v1/hosts/manifest:
+    get:
+      operationId: getHostManifest
+      summary: Bootstrap manifest (URLs, MCP tools, auth env, doctrine)
+      x-openai-isConsequential: false
+      responses:
+        "200":
+          description: Host manifest
+  /v1/routing-guide:
+    get:
+      operationId: getRoutingGuide
+      summary: MystoraX routing doctrine (authors, Hands, Science OS, refusals)
+      x-openai-isConsequential: false
+      responses:
+        "200":
+          description: Routing guide snapshot
+  /v1/surfaces:
+    get:
+      operationId: listSurfaces
+      summary: Capability surface catalog with status tags
+      x-openai-isConsequential: false
+      responses:
+        "200":
+          description: Surface catalog
+  /v1/axiom/status:
+    get:
+      operationId: getAxiomStatus
+      summary: Science OS readiness + MCP proxy fail-closed status
+      x-openai-isConsequential: false
+      responses:
+        "200":
+          description: Axiom / Science OS status
+  /v1/goal:
+    post:
+      operationId: submitGoal
+      summary: Submit a goal to MystoraX Conductor
+      x-openai-isConsequential: false
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GoalRequest"
+      responses:
+        "200":
+          description: Goal accepted and routed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GoalResponse"
+        "202":
+          description: Accepted async (high/xhigh durable job)
+        "401":
+          description: Missing or invalid bearer token
+  /v1/axiom/campaigns/{campaign_id}/resume:
+    post:
+      operationId: resumeScienceCampaign
+      summary: Resume Science OS campaign (budgeted; stop before CERTIFY)
+      x-openai-isConsequential: true
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: campaign_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ScienceResumeRequest"
+      responses:
+        "200":
+          description: Resume result
+components:
+  schemas:
+    GoalRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          description: Goal or prompt text
+        host:
+          type: string
+          default: chatgpt_desktop
+        voice:
+          type: boolean
+          default: false
+        job_class:
+          type: string
+          enum: [coding, research, planning, science, voice_frontdoor, ops]
+          default: research
+        effort:
+          type: string
+          description: Conductor effort tier (maps from ChatGPT Instant/Thinking intelligence)
+          enum: [low, medium, high, xhigh]
+        worker:
+          type: string
+          description: Prefer worker — perplexity|chatgpt|gemini|codex|claude|cursor-agent|copilot
+        model:
+          type: string
+          description: Bridge model alias (ChatGPT instant|thinking|pro; Perplexity model slug)
+        mode:
+          description: Bridge mode (Perplexity concise|copilot|research; Gemini 1|2|3)
+          oneOf:
+            - type: string
+            - type: integer
+        dispatch:
+          type: boolean
+          default: true
+    GoalResponse:
+      type: object
+      properties:
+        schema:
+          type: string
+        accepted:
+          type: boolean
+        run_id:
+          type: string
+        host:
+          type: string
+        goal:
+          type: string
+        next:
+          type: string
+    ScienceResumeRequest:
+      type: object
+      required:
+        - goal
+      properties:
+        goal:
+          type: string
+        phase:
+          type: string
+        max_phases:
+          type: integer
+          default: 1
+        max_auto_phase:
+          type: string
+          default: EVIDENCE
+        effort:
+          type: string
+        via:
+          type: string
+          default: cookie
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API_KEY
