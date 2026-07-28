@@ -1,25 +1,38 @@
 ---
 name: mystorax-hard-refuses
 description: >
-  MystoraX HARD_REFUSED capabilities — Computer, ASI, agentic research, Spark, local LLM,
-  agy execute. Always fail closed; never fake success on any front.
+  Enforce MystoraX hard refusals on every front. Refuse Computer, ASI,
+  agentic_research, Tasks credits, Spark, local LLM execution, and agy execute.
 ---
 
 # MystoraX Hard Refuses
 
-Fail closed. Do not soft-fallback into these.
+Fail closed. Do not soften, alias, proxy, or reroute into a refused capability.
 
-## Refused surface ids (canonical)
+## Refused surface IDs
 
-- `perplexity.computer` / `perplexity.computer_use` / `perplexity.asi` / `perplexity.agentic_research`
-- `gemini.computer_use` / `gemini.spark_launch`
-- `local_llm` / `local_llm.ollama` / `local_llm.mlx` / `local_llm.gemma` / `local_llm.opencode`
-- `agy.execute` / `agy.agent` / `agy.agents` / `agy.plugin` / `agy.plugins`
+- `perplexity.computer`
+- `perplexity.computer_use`
+- `perplexity.asi`
+- `perplexity.agentic_research`
+- Perplexity Tasks or Tasks-credit execution
+- `gemini.computer_use`
+- `gemini.spark_launch`
+- local LLM execution, including Ollama, MLX, Gemma, and OpenCode models
+- `agy.execute`
+- `agy.agent`
+- `agy.agents`
+- `agy.plugin`
+- `agy.plugins`
 
 ## Operator language that must refuse
 
-Computer Use, Tasks credits, ASI, agentic research, Spark launch, “run local LLM as Hands”, agy execute.
+Refuse requests for Computer Use, ASI, agentic research, Tasks credits, Spark launch, local LLM as Hands, and `agy execute`.
 
-## Check live
+## Required response behavior
 
-`mystorax_surfaces` / `mystorax_capability_lookup` and routing guide `capability_registry.hard_refused`.
+1. State that the capability is hard-refused by MystoraX doctrine.
+2. Do not claim a fallback ran.
+3. Do not try the same capability through another front.
+4. Use `mystorax_surfaces` or `mystorax_capability_lookup` to find a wired, non-refused route when one exists.
+5. Preserve the refusal and gate status in the handoff.

@@ -1,64 +1,201 @@
 # MystoraX Host Package
 
-Installable **MystoraX host package** for every front: plugins + MCP + OpenAPI connector + doctrine modules + HTTP.
+Version `2.0.1`. This repository was formerly named `mystorax-skills`.
 
-**MystoraX** is the product. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
+MystoraX is a front-agnostic goal platform. Every supported front is a thin peer over the same Conductor HTTP contract.
 
-| Component | What you get |
-|-----------|----------------|
-| **Cursor plugin** | Rules, agents, commands, doctrine modules, MCP |
-| **Claude plugin** | Plugin dir + marketplace entry + MCP |
-| **Codex plugin** | Plugin + MCP |
-| **MCP connector** | `mystorax-conductor` stdio (`pip install -e .`) |
-| **OpenAPI connector** | ChatGPT Actions (`openapi/conductor.openapi.yaml`) |
-| **HTTP connector** | Raw curl / custom clients |
-| **Installers** | `./install.sh` · `./verify.sh` · `./uninstall.sh` |
+**Capability source of truth:** `https://mx.parallex.ca`
 
-Capability lives on Conductor: `https://mx.parallex.ca`.
+No editor, chat client, CLI, plugin, or model owns routing doctrine. Conductor owns routing, capability discovery, admission, durable state, cost controls, human gates, and goal dispatch.
 
-- Repo: [`Daneshpajouh/mystorax-host`](https://github.com/Daneshpajouh/mystorax-host)
-- Version: [`VERSION`](VERSION) (`2.0.0`)
-- Optional bio pack: [`axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) (orthogonal)
+## Architecture
 
-> Formerly published as `mystorax-skills`. That name is retired — this is the host package.
+```text
+HTTP/curl | Cursor | Claude Code | Claude Science | Codex
+ChatGPT Actions/Desktop | Gemini-as-UI | custom MCP/OpenAPI hosts
+                              |
+                              v
+                 MystoraX Conductor HTTP SSoT
+                    https://mx.parallex.ca
+                              |
+             Authors create complete work packages
+                 Hands apply, download, and check
+```
 
-## Install
+The local MCP server in this repository is a thin HTTP facade. It does not become a second orchestrator.
+
+## Peer fronts
+
+| Front | Connection | Local role |
+|---|---|---|
+| HTTP or `curl` | Raw Conductor HTTP | Direct, scriptable peer |
+| Cursor | Doctrine modules plus stdio MCP | Thin coding and operator front |
+| Claude Code | Doctrine modules plus stdio MCP | Thin coding and operator front |
+| Claude Science | Doctrine modules plus MCP or HTTP | Thin scientific-work front |
+| Codex | Doctrine modules plus stdio MCP | Thin coding and operator front |
+| ChatGPT Actions/Desktop | OpenAPI or MCP | Thin conversational front |
+| Gemini-as-UI | HTTP or MCP through its host | Text-only front |
+| Custom host | MCP, OpenAPI, or raw HTTP | Equal peer using the same discovery contract |
+
+The `skills/` directory is the Agent Skills wire format used by compatible fronts. It is one package component, not the product name.
+
+## Install matrix
+
+| Front | Install path |
+|---|---|
+| Any shell or service | Read `connectors/mystorax-conductor.md` |
+| Cursor | Run `./install.sh --cursor`, or use `.cursor-plugin/plugin.json` |
+| Claude Code | Run `./install.sh --claude`, or copy `skills/*` into the front's skills directory |
+| Claude Science | Use the same doctrine modules and MCP config as Claude Code |
+| Codex | Run `./install.sh --codex`, or use `.codex-plugin/plugin.json` |
+| ChatGPT Actions | Import `https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml` or `openapi/conductor.openapi.yaml` |
+| ChatGPT Desktop | Register `.mcp.json`, or use the OpenAPI contract |
+| Gemini-as-UI | Configure its host to call HTTP or the MCP server; keep Gemini text-only |
+| Custom MCP/OpenAPI host | Use `.mcp.json` or `openapi/conductor.openapi.yaml` |
+
+`install.sh` never stores credentials. Export credentials in the process environment or use the front's credential UI.
+
+## Doctrine
+
+| Topic | Contract |
+|---|---|
+| Capability SSoT | Conductor HTTP at `https://mx.parallex.ca` |
+| Discovery | `routing_guide` then `surfaces` then `submit_goal` |
+| Bootstrap | `GET /v1/hosts/manifest` |
+| Authoring | Bridges author complete outputs and work packages |
+| Files | Perplexity and ChatGPT only |
+| Gemini | Text and long-context work only, never file packages |
+| Hands | `gemini -> copilot -> codex -> cursor-agent -> claude` |
+| Hands scope | Apply, download, and check only |
+| Science OS | Auto-resume may advance only through `EVIDENCE` |
+| Certification | Never auto-CERTIFY |
+| Cost | Respect Conductor cost ceilings and parked goals |
+| Irreversible work | Require an approved human gate |
+| Secrets | Environment variables or front credential UI only |
+| Hard refuses | Computer, ASI, `agentic_research`, Tasks credits, Spark, local LLM, `agy execute` |
+
+## Discovery contract
+
+Every front follows the same sequence.
+
+### 1. Bootstrap
 
 ```bash
-git clone https://github.com/Daneshpajouh/mystorax-host.git
-cd mystorax-host
-export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
-export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
-./install.sh
+curl -fsS "${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}/v1/hosts/manifest"
+```
+
+### 2. Read routing doctrine
+
+```bash
+curl -fsS "${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}/v1/routing-guide"
+```
+
+### 3. Inspect capability surfaces
+
+```bash
+curl -fsS "${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}/v1/surfaces"
+```
+
+Statuses may include `wired`, `guided`, `inventory`, `refused`, and `deferred`. Do not invent a route for a missing or refused surface.
+
+### 4. Submit the goal
+
+```bash
+curl -fsS -X POST \
+  "${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}/v1/goal" \
+  -H "Authorization: Bearer ${MYSTORAX_HOST_TOKEN:?set MYSTORAX_HOST_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "text": "Produce the requested result and return complete evidence.",
+    "host": "http_curl",
+    "job_class": "research",
+    "effort": "medium",
+    "dispatch": true
+  }'
+```
+
+Supported goal fields include `text`, `host`, `voice`, `job_class`, `effort`, `worker`, `model`, `mode`, `bridge_opts`, `metadata`, `dispatch`, and `async_mode`.
+
+## Perplexity sources
+
+Perplexity defaults to web-only research when no source list is supplied.
+
+Opt in through `bridge_opts.sources` or `metadata.sources`:
+
+```json
+{
+  "text": "Review the evidence and cite primary sources.",
+  "job_class": "research",
+  "bridge_opts": {
+    "sources": ["academic", "github"]
+  }
+}
+```
+
+Accepted source names:
+
+- `web`
+- `academic`
+- `github`
+- `huggingface` or `hf`
+- `cloudflare` or `cf`
+- `notion`, opt-in only
+
+Do not add unsupported source names. Do not enable Notion unless the goal requires it.
+
+## MCP tools
+
+The included server exposes the Conductor's 10-tool facade:
+
+- `mystorax_routing_guide`
+- `mystorax_surfaces`
+- `mystorax_capability_lookup`
+- `mystorax_submit_goal`
+- `mystorax_job_status`
+- `mystorax_wait_stream_hint`
+- `mystorax_science_status`
+- `mystorax_science_resume`
+- `mystorax_axiom_tool_search`
+- `mystorax_axiom_tool_call`
+
+The server prefers live tool descriptors from `GET /v1/hosts/mcp/tools`. It falls back to the bundled descriptors only when discovery is unavailable.
+
+## Verify
+
+```bash
+export MYSTORAX_HOST_TOKEN='set-through-a-secret-store'
 ./verify.sh
 ```
 
-| Front | How |
-|-------|-----|
-| Cursor / Claude Code / Codex | `./install.sh` |
-| Claude Science | Import from GitHub → `Daneshpajouh/mystorax-host` |
-| ChatGPT | OpenAPI → `connectors/chatgpt-actions.md` |
-| HTTP / any agent | Bearer token + `POST /v1/goal` |
+For static checks without a credential:
 
-Equal-weight steps: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) · Agent contract: [`AGENTS.md`](AGENTS.md) · Matrix: [`PACKAGE.md`](PACKAGE.md)
+```bash
+./verify.sh --offline
+```
 
-## Discovery (every front)
+The live verification submits `Reply with exactly: MYSTORAX_OK` through `POST /v1/goal` and follows durable job status when required.
 
-1. `mystorax_routing_guide` / `GET /v1/routing-guide`
-2. `mystorax_surfaces` / `GET /v1/surfaces`
-3. `mystorax_submit_goal` / `POST /v1/goal`
-4. Cold bootstrap: `GET /v1/hosts/manifest`
+## Repository layout
 
-## Doctrine (locked)
+```text
+AGENTS.md
+FRONT_ONBOARD.md
+README.md
+agents/
+connectors/
+openapi/
+scripts/
+skills/
+.cursor-plugin/
+.claude-plugin/
+.codex-plugin/
+.mcp.json
+install.sh
+verify.sh
+credentials.example.env
+VERSION
+```
 
-| Rule | Detail |
-|------|--------|
-| SSoT | Conductor HTTP |
-| Files | Perplexity + ChatGPT only |
-| Gemini | Text / long-context only |
-| Hands | Thin `gemini → copilot → codex → cursor-agent → claude` |
-| Science | Auto-stop at **EVIDENCE**; never auto-CERTIFY |
-| Authors | One long session; escalate before provider switch |
-| Sources | Perplexity default `web`; select academic/github/hf/cf |
-| Refuse | Computer / ASI / agentic_research / Spark / local LLM / agy |
-| Secrets | Never commit tokens |
+## Safety boundary
+
+This pack does not expose direct bridge URLs, embed credentials, create a local orchestrator, or authorize refused surfaces. When Conductor and a front disagree, Conductor wins.

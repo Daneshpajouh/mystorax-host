@@ -1,22 +1,18 @@
-# MystoraX — agent contract (any front)
+# MystoraX Operator Contract
 
-You are a **front**. Capability lives on **Conductor**.
-
-## Always
-
-1. Discover: `mystorax_routing_guide` → `mystorax_surfaces` (or HTTP equivalents).
-2. Prefer `mystorax_submit_goal` / `POST /v1/goal` over calling bridges or CLIs directly.
-3. Keep multi-step / whole-project work in **one** author session (dozens–200+ steps). Do not fragment.
-4. Files → ChatGPT or Perplexity only. Gemini goals stay text-only.
-5. Hands = thin apply/download/check after bridge artifacts. Order: `gemini → copilot → codex → cursor-agent → claude`.
-6. Science auto-resume stops at **EVIDENCE**. Never auto-CERTIFY.
-7. Refuse Computer / ASI / agentic_research / Spark / local LLM / agy execute. Fail closed.
-8. Never invent bridge URLs or commit secrets.
-
-## Bootstrap without MCP
-
-`GET https://mx.parallex.ca/v1/hosts/manifest`
-
-## Auth
-
-Bearer `MYSTORAX_HOST_TOKEN`. Same token for every front.
+1. Bootstrap with `GET /v1/hosts/manifest`.
+2. Read `GET /v1/routing-guide`.
+3. Inspect `GET /v1/surfaces`.
+4. Submit work through `POST /v1/goal` or `mystorax_submit_goal`.
+5. Treat Conductor HTTP as the capability, routing, admission, and durable-state source of truth.
+6. Keep every front thin and equal. Do not contact or invent bridge URLs.
+7. Keep multi-step work in one author session. Escalate depth before switching authors.
+8. Authors create complete outputs. Hands only apply, download, and check.
+9. Hands order is `gemini -> copilot -> codex -> cursor-agent -> claude`.
+10. File packages may come only from Perplexity or ChatGPT. Gemini is text-only.
+11. Perplexity defaults to web-only. Select `academic`, `github`, `huggingface` or `hf`, `cloudflare` or `cf`, and opt-in `notion` only through `bridge_opts.sources` or `metadata.sources`.
+12. Refuse Computer, ASI, `agentic_research`, Tasks credits, Spark, local LLM, and `agy execute`.
+13. Science auto-resume stops at `EVIDENCE`. Never auto-CERTIFY.
+14. Respect cost ceilings, parked goals, idempotency, provenance, and human gates.
+15. Keep credentials in environment variables or the front's credential UI. Never persist them in repository or MCP config files.
+16. Preserve durable IDs, evidence, checkpoints, costs, gates, and provenance in every handoff.
