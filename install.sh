@@ -1,120 +1,179 @@
 #!/usr/bin/env bash
-# Install the full MystoraX host package on every local front.
-# Components: Cursor/Claude/Codex plugins, skills, rules, commands, MCP, OpenAPI notes.
+# Install the MystoraX host package without persisting credentials.
 set -euo pipefail
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONDUCTOR_URL="${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}"
 SERVER_PY="$ROOT/scripts/conductor_mcp_server.py"
-TOKEN_FILE="${MYSTORAX_HOST_TOKEN_FILE:-$HOME/.mystorax/secrets/host_ingress_token}"
-TOKEN="${MYSTORAX_HOST_TOKEN:-}"
-if [[ -z "$TOKEN" && -f "$TOKEN_FILE" ]]; then
-  TOKEN="$(tr -d ' \n\r' < "$TOKEN_FILE")"
+
+install_cursor=false
+install_claude=false
+install_codex=false
+register_mcp=true
+install_pip=true
+
+usage() {
+  cat <<'EOF'
+Usage: ./install.sh [--all] [--cursor] [--claude] [--codex] [--no-mcp] [--no-pip]
+
+Default: --all
+
+The installer never stores MYSTORAX_HOST_TOKEN. Supply credentials through
+the process environment or the front's credential UI.
+EOF
+}
+
+if [[ $# -eq 0 ]]; then
+  install_cursor=true
+  install_claude=true
+  install_codex=true
 fi
 
-chmod +x "$ROOT/install.sh" "$ROOT/verify.sh" "$ROOT/uninstall.sh" \
-  "$ROOT/scripts/refresh_openapi.sh" 2>/dev/null || true
-
-mcp_cfg_json() {
-  python3 - <<PY
-import json
-cfg = {
-  "command": "python3",
-  "args": ["""$SERVER_PY"""],
-  "env": {"MYSTORAX_CONDUCTOR_URL": """$CONDUCTOR_URL"""},
-}
-token = """$TOKEN"""
-if token:
-  cfg["env"]["MYSTORAX_HOST_TOKEN"] = token
-print(json.dumps({"mcpServers": {"mystorax-conductor": cfg}}, indent=2))
-PY
-}
-
-# --- Cursor plugin (full package) ---
-CURSOR_DST="${HOME}/.cursor/plugins/local/mystorax-host"
-mkdir -p "$(dirname "$CURSOR_DST")"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CURSOR_DST/"
-mcp_cfg_json > "$CURSOR_DST/.mcp.json"
-echo "cursor_plugin=$CURSOR_DST"
-# Drop legacy skills-named install
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"
-
-# Also install as mystorax-gateway alias (older Settings / manifests)
-GATEWAY_DST="${HOME}/.cursor/plugins/local/mystorax-gateway"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$GATEWAY_DST/"
-# Keep gateway plugin name for Settings that still look for mystorax-gateway
-python3 - <<PY
-import json
-from pathlib import Path
-for name in (".cursor-plugin", ".claude-plugin", ".codex-plugin"):
-    p = Path("""$GATEWAY_DST""") / name / "plugin.json"
-    if not p.is_file():
-        continue
-    data = json.loads(p.read_text())
-    data["name"] = "mystorax-gateway"
-    data["description"] = "Alias install of mystorax-host host package (front-agnostic Conductor)."
-    p.write_text(json.dumps(data, indent=2) + "\n")
-PY
-mcp_cfg_json > "$GATEWAY_DST/.mcp.json"
-echo "cursor_gateway_alias=$GATEWAY_DST"
-
-# User MCP merge
-USER_MCP="${HOME}/.cursor/mcp.json"
-python3 - <<PY
-import json
-from pathlib import Path
-user_mcp = Path("""$USER_MCP""")
-cfg = {
-  "command": "python3",
-  "args": ["""$SERVER_PY"""],
-  "env": {"MYSTORAX_CONDUCTOR_URL": """$CONDUCTOR_URL"""},
-}
-token = """$TOKEN"""
-if token:
-    cfg["env"]["MYSTORAX_HOST_TOKEN"] = token
-data = {"mcpServers": {}}
-if user_mcp.is_file():
-    try:
-        data = json.loads(user_mcp.read_text())
-        data.setdefault("mcpServers", {})
-    except Exception:
-        data = {"mcpServers": {}}
-data["mcpServers"]["mystorax-conductor"] = cfg
-user_mcp.parent.mkdir(parents=True, exist_ok=True)
-user_mcp.write_text(json.dumps(data, indent=2) + "\n")
-print("registered", user_mcp)
-PY
-
-# --- Claude Code + Codex skills ---
-for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
-  mkdir -p "$base"
-  for d in "$ROOT"/skills/*; do
-    [[ -d "$d" ]] || continue
-    name="$(basename "$d")"
-    rsync -a "$d/" "$base/$name/"
-  done
-  rm -rf "$base/mystorax-claude-science-onboard"
-  echo "skills synced -> $base"
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --all)
+      install_cursor=true
+      install_claude=true
+      install_codex=true
+      ;;
+    --cursor) install_cursor=true ;;
+    --claude) install_claude=true ;;
+    --codex) install_codex=true ;;
+    --no-mcp) register_mcp=false ;;
+    --no-pip) install_pip=false ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      usage >&2
+      exit 2
+      ;;
+  esac
+  shift
 done
 
-# Claude plugin dir (optional --plugin-dir)
-CLAUDE_PLUGIN_DST="${HOME}/.claude/plugins/local/mystorax-host"
-mkdir -p "$(dirname "$CLAUDE_PLUGIN_DST")"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CLAUDE_PLUGIN_DST/"
-mcp_cfg_json > "$CLAUDE_PLUGIN_DST/.mcp.json"
-echo "claude_plugin=$CLAUDE_PLUGIN_DST"
+copy_tree() {
+  local src="$1"
+  local dst="$2"
+  mkdir -p "$dst"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --delete \
+      --exclude '.git' \
+      --exclude '**/__pycache__' \
+      --exclude 'python/*.egg-info' \
+      "$src/" "$dst/"
+  else
+    rm -rf "$dst"
+    mkdir -p "$dst"
+    cp -R "$src/." "$dst/"
+    rm -rf "$dst/.git"
+    find "$dst" -type d -name __pycache__ -prune -exec rm -rf {} +
+  fi
+}
 
-# --- Optional pip MCP entrypoint ---
-if command -v pip3 >/dev/null 2>&1; then
-  pip3 install -e "$ROOT" --quiet 2>/dev/null && echo "pip_mcp=mystorax-conductor-mcp" || echo "pip_mcp=skipped"
-else
-  echo "pip_mcp=skipped"
+copy_skills() {
+  local dst_root="$1"
+  mkdir -p "$dst_root"
+  local skill_dir
+  for skill_dir in "$ROOT"/skills/*; do
+    [[ -d "$skill_dir" ]] || continue
+    copy_tree "$skill_dir" "$dst_root/$(basename "$skill_dir")"
+  done
+}
+
+write_mcp_config() {
+  local path="$1"
+  local server="$2"
+  mkdir -p "$(dirname "$path")"
+  MCP_PATH="$path" SERVER_PY="$server" CONDUCTOR_URL="$CONDUCTOR_URL" python3 - <<'PY'
+import json
+import os
+from pathlib import Path
+
+path = Path(os.environ["MCP_PATH"])
+data = {"mcpServers": {}}
+if path.is_file():
+    try:
+        loaded = json.loads(path.read_text(encoding="utf-8"))
+        if isinstance(loaded, dict):
+            data = loaded
+    except (OSError, json.JSONDecodeError):
+        backup = path.with_suffix(path.suffix + ".bak")
+        backup.write_bytes(path.read_bytes())
+        data = {"mcpServers": {}}
+
+servers = data.setdefault("mcpServers", {})
+if not isinstance(servers, dict):
+    servers = {}
+    data["mcpServers"] = servers
+
+servers["mystorax-conductor"] = {
+    "command": "python3",
+    "args": [os.environ["SERVER_PY"]],
+    "env": {
+        "MYSTORAX_CONDUCTOR_URL": os.environ["CONDUCTOR_URL"],
+    },
+}
+path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+PY
+}
+
+chmod +x "$ROOT/install.sh" "$ROOT/verify.sh" "$ROOT/uninstall.sh" \
+  "$ROOT/scripts/conductor_mcp_server.py" "$ROOT/scripts/refresh_openapi.sh" \
+  2>/dev/null || true
+
+if $install_cursor; then
+  cursor_plugin="$HOME/.cursor/plugins/local/mystorax-host"
+  copy_tree "$ROOT" "$cursor_plugin"
+  write_mcp_config "$cursor_plugin/.mcp.json" "$SERVER_PY"
+  echo "cursor_plugin=$cursor_plugin"
+
+  # Compatibility alias for older host registrations.
+  gateway_plugin="$HOME/.cursor/plugins/local/mystorax-gateway"
+  copy_tree "$ROOT" "$gateway_plugin"
+  write_mcp_config "$gateway_plugin/.mcp.json" "$SERVER_PY"
+  echo "cursor_gateway_alias=$gateway_plugin"
+
+  rm -rf "$HOME/.cursor/plugins/local/mystorax-skills"
+
+  if $register_mcp; then
+    write_mcp_config "$HOME/.cursor/mcp.json" "$SERVER_PY"
+    echo "cursor_mcp=$HOME/.cursor/mcp.json"
+  fi
 fi
 
-echo "host_token_set=$([[ -n "$TOKEN" ]] && echo yes || echo no)"
-echo "chatgpt_openapi_live=$CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml"
-echo "chatgpt_openapi_pack=$ROOT/openapi/conductor.openapi.yaml"
-echo "manifest=$CONDUCTOR_URL/v1/hosts/manifest"
-echo "connectors=$ROOT/connectors/"
-echo "verify=$ROOT/verify.sh"
-echo "version=$(tr -d ' \n' < "$ROOT/VERSION" 2>/dev/null || echo unknown)"
-echo "done"
+if $install_claude; then
+  copy_skills "$HOME/.claude/skills"
+  claude_plugin="$HOME/.claude/plugins/local/mystorax-host"
+  copy_tree "$ROOT" "$claude_plugin"
+  write_mcp_config "$claude_plugin/.mcp.json" "$SERVER_PY"
+  echo "claude_skills=$HOME/.claude/skills"
+  echo "claude_plugin=$claude_plugin"
+fi
+
+if $install_codex; then
+  copy_skills "$HOME/.codex/skills"
+  echo "codex_skills=$HOME/.codex/skills"
+fi
+
+if $install_pip && command -v pip3 >/dev/null 2>&1; then
+  pip3 install -e "$ROOT" --quiet 2>/dev/null \
+    && echo "pip_mcp=mystorax-conductor-mcp" \
+    || echo "pip_mcp=skipped"
+fi
+
+"$ROOT/verify.sh" --offline
+
+cat <<EOF
+MystoraX host package installed.
+
+Conductor: $CONDUCTOR_URL
+MCP server: $SERVER_PY
+OpenAPI: $ROOT/openapi/conductor.openapi.yaml
+
+Credentials were not stored.
+Export MYSTORAX_HOST_TOKEN or set it in the front credential UI.
+Run ./verify.sh for the live MYSTORAX_OK smoke test.
+EOF
