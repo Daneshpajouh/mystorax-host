@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mystorax-conductor-mcp"
-version = "2.0.0"
-description = "Thin stdio MCP connector for the MystoraX host package (Conductor HTTP facade)."
+version = "2.0.1"
+description = "Thin stdio MCP connector for the front-agnostic MystoraX host package."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "Proprietary" }
