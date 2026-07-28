@@ -1,61 +1,69 @@
 openapi: 3.1.0
 info:
   title: MystoraX Conductor
-  version: "0.3.0"
-  description: |
-    Front-agnostic Actions / OpenAPI door into MystoraX Conductor.
-    HTTP is the SSoT; Conductor MCP is a thin facade over the same endpoints.
-    Coding doctrine: bridges (ChatGPT / Perplexity) own multi-step code
-    authorship in one session (packages, iteration, often 100–200+ steps).
-    Do not send tiny one-step coding asks. CLIs only download/apply and run
-    light local checks. Gemini is text-only (no file packages).
-    Science: durable campaigns; auto-resume stops at EVIDENCE; never auto-CERTIFY.
-    Map ChatGPT Intelligence UI to conductor effort:
-      Instant / Light -> effort=low
-      Standard / Medium -> effort=medium
-      Extended / High / Thinking -> effort=high
-      Heavy / Pro / xhigh -> effort=xhigh
-    Discovery: call getRoutingGuide + listSurfaces before inventing routes.
+  version: "2.0.1"
+  description: >
+    Front-agnostic MystoraX Conductor HTTP source of truth. Fronts must call
+    routing guide and surfaces before submitting a goal.
 servers:
   - url: https://mx.parallex.ca
 paths:
   /v1/hosts/manifest:
     get:
       operationId: getHostManifest
-      summary: Bootstrap manifest (URLs, MCP tools, auth env, doctrine)
-      x-openai-isConsequential: false
+      summary: Bootstrap MystoraX hosts and discovery
+      security: []
       responses:
         "200":
-          description: Host manifest
+          description: Current host manifest
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
   /v1/routing-guide:
     get:
       operationId: getRoutingGuide
-      summary: MystoraX routing doctrine (authors, Hands, Science OS, refusals)
-      x-openai-isConsequential: false
+      summary: Get MystoraX routing doctrine
+      security: []
       responses:
         "200":
-          description: Routing guide snapshot
+          description: Current routing guide
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
   /v1/surfaces:
     get:
       operationId: listSurfaces
-      summary: Capability surface catalog with status tags
-      x-openai-isConsequential: false
+      summary: List MystoraX capability surfaces
+      security: []
       responses:
         "200":
-          description: Surface catalog
-  /v1/axiom/status:
+          description: Capability surface catalog
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /v1/hosts/mcp/tools:
     get:
-      operationId: getAxiomStatus
-      summary: Science OS readiness + MCP proxy fail-closed status
-      x-openai-isConsequential: false
+      operationId: listMcpTools
+      summary: List current Conductor MCP tool descriptors
+      security: []
       responses:
         "200":
-          description: Axiom / Science OS status
-  /v1/goal:
+          description: Tool descriptors
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /v1/hosts/mcp/tools/call:
     post:
-      operationId: submitGoal
-      summary: Submit a goal to MystoraX Conductor
-      x-openai-isConsequential: false
+      operationId: callMcpTool
+      summary: Call a Conductor MCP tool through its HTTP twin
       security:
         - bearerAuth: []
       requestBody:
@@ -63,23 +71,87 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/GoalRequest"
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                arguments:
+                  type: object
+                  additionalProperties: true
       responses:
         "200":
-          description: Goal accepted and routed
+          description: Tool result
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/GoalResponse"
+                type: object
+                additionalProperties: true
+  /v1/goal:
+    post:
+      operationId: submitGoal
+      summary: Submit a goal to MystoraX Conductor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Goal"
+      responses:
+        "200":
+          description: Synchronous or completed result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
         "202":
-          description: Accepted async (high/xhigh durable job)
-        "401":
-          description: Missing or invalid bearer token
+          description: Accepted durable job or wait
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /v1/jobs/{job_id}/status:
+    get:
+      operationId: getJobStatus
+      summary: Get durable job status
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Job status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /v1/axiom/status:
+    get:
+      operationId: getAxiomStatus
+      summary: Get MystoraX Science OS and Axiom readiness
+      security: []
+      responses:
+        "200":
+          description: Science OS status
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
   /v1/axiom/campaigns/{campaign_id}/resume:
     post:
       operationId: resumeScienceCampaign
-      summary: Resume Science OS campaign (budgeted; stop before CERTIFY)
-      x-openai-isConsequential: true
+      summary: Resume a bounded Science OS campaign
+      description: Automatic progression must stop at EVIDENCE and never auto-CERTIFY.
       security:
         - bearerAuth: []
       parameters:
@@ -93,85 +165,107 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ScienceResumeRequest"
+              type: object
+              required: [goal]
+              properties:
+                goal:
+                  type: string
+                phase:
+                  type: string
+                max_phases:
+                  type: integer
+                  minimum: 1
+                  default: 1
+                max_auto_phase:
+                  type: string
+                  enum: [DEFINE, PLAN, DESIGN, EXECUTE, ANALYZE, EVIDENCE]
+                  default: EVIDENCE
+                effort:
+                  type: string
+                via:
+                  type: string
+                  default: cookie
       responses:
         "200":
-          description: Resume result
+          description: Campaign resume result
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+  /v1/axiom/mcp/tools/call:
+    post:
+      operationId: callAxiomTool
+      summary: Call one allowlisted Axiom tool through Conductor
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tool]
+              properties:
+                tool:
+                  type: string
+                arguments:
+                  type: object
+                  additionalProperties: true
+                timeout_s:
+                  type: number
+                  minimum: 1
+                  default: 60
+      responses:
+        "200":
+          description: Axiom tool result or fail-closed gate
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
   schemas:
-    GoalRequest:
+    Goal:
       type: object
-      required:
-        - text
+      required: [text]
       properties:
         text:
           type: string
-          description: Goal or prompt text
+          minLength: 1
         host:
           type: string
-          default: chatgpt_desktop
+          default: openapi
         voice:
           type: boolean
           default: false
         job_class:
           type: string
-          enum: [coding, research, planning, science, voice_frontdoor, ops]
-          default: research
+          enum: [research, coding, planning, science, ops, voice_frontdoor]
+          default: coding
         effort:
           type: string
-          description: Conductor effort tier (maps from ChatGPT Instant/Thinking intelligence)
           enum: [low, medium, high, xhigh]
         worker:
           type: string
-          description: Prefer worker — perplexity|chatgpt|gemini|codex|claude|cursor-agent|copilot
         model:
           type: string
-          description: Bridge model alias (ChatGPT instant|thinking|pro; Perplexity model slug)
         mode:
-          description: Bridge mode (Perplexity concise|copilot|research; Gemini 1|2|3)
           oneOf:
             - type: string
             - type: integer
+        bridge_opts:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
         dispatch:
           type: boolean
           default: true
-    GoalResponse:
-      type: object
-      properties:
-        schema:
-          type: string
-        accepted:
+        async_mode:
           type: boolean
-        run_id:
-          type: string
-        host:
-          type: string
-        goal:
-          type: string
-        next:
-          type: string
-    ScienceResumeRequest:
-      type: object
-      required:
-        - goal
-      properties:
-        goal:
-          type: string
-        phase:
-          type: string
-        max_phases:
-          type: integer
-          default: 1
-        max_auto_phase:
-          type: string
-          default: EVIDENCE
-        effort:
-          type: string
-        via:
-          type: string
-          default: cookie
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: API_KEY
