@@ -30,13 +30,15 @@ PY
 }
 
 # --- Cursor plugin (full package) ---
-CURSOR_DST="${HOME}/.cursor/plugins/local/mystorax-skills"
+CURSOR_DST="${HOME}/.cursor/plugins/local/mystorax-host"
 mkdir -p "$(dirname "$CURSOR_DST")"
 rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CURSOR_DST/"
 mcp_cfg_json > "$CURSOR_DST/.mcp.json"
 echo "cursor_plugin=$CURSOR_DST"
+# Drop legacy skills-named install
+rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"
 
-# Also install as mystorax-gateway alias (manifest historically pointed here)
+# Also install as mystorax-gateway alias (older Settings / manifests)
 GATEWAY_DST="${HOME}/.cursor/plugins/local/mystorax-gateway"
 rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$GATEWAY_DST/"
 # Keep gateway plugin name for Settings that still look for mystorax-gateway
@@ -49,7 +51,7 @@ for name in (".cursor-plugin", ".claude-plugin", ".codex-plugin"):
         continue
     data = json.loads(p.read_text())
     data["name"] = "mystorax-gateway"
-    data["description"] = "Alias install of mystorax-skills host package (front-agnostic Conductor)."
+    data["description"] = "Alias install of mystorax-host host package (front-agnostic Conductor)."
     p.write_text(json.dumps(data, indent=2) + "\n")
 PY
 mcp_cfg_json > "$GATEWAY_DST/.mcp.json"
@@ -95,7 +97,7 @@ for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
 done
 
 # Claude plugin dir (optional --plugin-dir)
-CLAUDE_PLUGIN_DST="${HOME}/.claude/plugins/local/mystorax-skills"
+CLAUDE_PLUGIN_DST="${HOME}/.claude/plugins/local/mystorax-host"
 mkdir -p "$(dirname "$CLAUDE_PLUGIN_DST")"
 rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CLAUDE_PLUGIN_DST/"
 mcp_cfg_json > "$CLAUDE_PLUGIN_DST/.mcp.json"

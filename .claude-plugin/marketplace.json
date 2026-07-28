@@ -1,18 +1,29 @@
 {
-  "name": "mystorax-skills-marketplace",
-  "owner": { "name": "MystoraX" },
+  "name": "mystorax-host-marketplace",
+  "owner": {
+    "name": "MystoraX"
+  },
   "metadata": {
     "description": "Front-agnostic MystoraX Conductor host package",
-    "version": "1.3.0"
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "mystorax-skills",
+      "name": "mystorax-host",
       "source": "./",
-      "description": "Conductor skills, MCP gateway, OpenAPI connector — peer fronts equal",
-      "keywords": ["mystorax", "conductor", "mcp", "front-agnostic"],
+      "description": "Conductor host package: plugins, MCP, OpenAPI connector \u2014 peer fronts equal",
+      "keywords": [
+        "mystorax",
+        "conductor",
+        "mcp",
+        "front-agnostic",
+        "host-package"
+      ],
       "category": "productivity",
-      "tags": ["platform", "orchestration"]
+      "tags": [
+        "platform",
+        "orchestration"
+      ]
     }
   ]
 }

@@ -1,8 +1,10 @@
 {
-  "name": "mystorax-skills",
-  "version": "1.3.0",
-  "description": "Installable MystoraX host package for Codex — Conductor skills + MCP.",
-  "author": { "name": "MystoraX" },
+  "name": "mystorax-host",
+  "version": "2.0.0",
+  "description": "Installable MystoraX host package \u2014 Conductor plugin, MCP, OpenAPI connector, and doctrine for any front.",
+  "author": {
+    "name": "MystoraX"
+  },
   "skills": "./skills/",
   "agents": "./agents/",
   "mcpServers": "./.mcp.json"

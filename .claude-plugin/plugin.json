@@ -1,9 +1,19 @@
 {
-  "name": "mystorax-skills",
-  "version": "1.3.0",
-  "description": "Installable MystoraX host package — Conductor plugin, skills, MCP, OpenAPI for any front.",
-  "author": { "name": "MystoraX" },
-  "repository": "https://github.com/Daneshpajouh/mystorax-skills",
+  "name": "mystorax-host",
+  "version": "2.0.0",
+  "description": "Installable MystoraX host package \u2014 Conductor plugin, MCP, OpenAPI connector, and doctrine for any front.",
+  "author": {
+    "name": "MystoraX"
+  },
+  "repository": "https://github.com/Daneshpajouh/mystorax-host",
   "license": "Proprietary",
-  "keywords": ["mystorax", "conductor", "mcp", "front-agnostic"]
+  "keywords": [
+    "mystorax",
+    "conductor",
+    "mcp",
+    "openapi",
+    "plugin",
+    "front-agnostic",
+    "host-package"
+  ]
 }

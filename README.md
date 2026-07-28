@@ -1,38 +1,46 @@
 # MystoraX Host Package
 
-**Installable** front-agnostic package for MystoraX Conductor: plugins + skills + rules + commands + MCP server + OpenAPI/Actions connector.
+Installable **MystoraX** integration for every front: plugin + MCP + OpenAPI connector + doctrine + portable skill modules.
 
-**MystoraX** is the platform. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
+**MystoraX** is the product. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
 
 | Component | What you get |
 |-----------|----------------|
-| **Cursor plugin** | Skills, rules, agents, slash commands, MCP |
-| **Claude plugin** | Skills + MCP + marketplace entry + `claude --plugin-dir` |
-| **Codex plugin** | Skills + MCP |
-| **MCP server** | `mystorax-conductor` stdio facade (also `pip install -e .`) |
-| **OpenAPI connector** | ChatGPT Actions (`openapi/conductor.openapi.yaml` + live URL) |
-| **HTTP connector** | Raw curl / custom clients (`connectors/`) |
-| **Verify / uninstall** | `./verify.sh` · `./uninstall.sh` |
+| **Cursor plugin** | Rules, agents, commands, skill modules, MCP |
+| **Claude plugin** | Plugin dir + marketplace entry + MCP |
+| **Codex plugin** | Plugin + MCP |
+| **MCP connector** | `mystorax-conductor` stdio (`pip install -e .`) |
+| **OpenAPI connector** | ChatGPT Actions (`openapi/conductor.openapi.yaml`) |
+| **HTTP connector** | Raw curl / custom clients |
+| **Installers** | `./install.sh` · `./verify.sh` · `./uninstall.sh` |
 
 Capability lives on Conductor: `https://mx.parallex.ca`.
 
-Repo: [`Daneshpajouh/mystorax-skills`](https://github.com/Daneshpajouh/mystorax-skills) · Version [`VERSION`](VERSION)
+- Repo: [`Daneshpajouh/mystorax-host`](https://github.com/Daneshpajouh/mystorax-host)
+- Version: [`VERSION`](VERSION) (`2.0.0`)
+- Optional bio pack: [`axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) (orthogonal)
 
-Optional bio pack: [`axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) (orthogonal).
+> Formerly published as `mystorax-skills`. That name is retired — this is the host package.
 
-## One-command install
+## Install
 
 ```bash
-git clone https://github.com/Daneshpajouh/mystorax-skills.git
-cd mystorax-skills
+git clone https://github.com/Daneshpajouh/mystorax-host.git
+cd mystorax-host
 export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
 export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
 ./install.sh
 ./verify.sh
 ```
 
-Claude Science: Skills → Import from GitHub → `Daneshpajouh/mystorax-skills` (equal peer).  
-ChatGPT: Import OpenAPI → see `connectors/chatgpt-actions.md`.
+| Front | How |
+|-------|-----|
+| Cursor / Claude Code / Codex | `./install.sh` |
+| Claude Science | Import from GitHub → `Daneshpajouh/mystorax-host` |
+| ChatGPT | OpenAPI → `connectors/chatgpt-actions.md` |
+| HTTP / any agent | Bearer token + `POST /v1/goal` |
+
+Equal-weight steps: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) · Agent contract: [`AGENTS.md`](AGENTS.md) · Matrix: [`PACKAGE.md`](PACKAGE.md)
 
 ## Discovery (every front)
 
@@ -40,28 +48,6 @@ ChatGPT: Import OpenAPI → see `connectors/chatgpt-actions.md`.
 2. `mystorax_surfaces` / `GET /v1/surfaces`
 3. `mystorax_submit_goal` / `POST /v1/goal`
 4. Cold bootstrap: `GET /v1/hosts/manifest`
-
-## Package layout
-
-```
-.cursor-plugin/     Cursor manifest (skills, rules, commands, agents, MCP)
-.claude-plugin/     Claude plugin + marketplace.json
-.codex-plugin/      Codex manifest
-.mcp.json           MCP stdio entry
-rules/              Always-on doctrine
-commands/           Slash commands
-skills/             Portable SKILL.md set
-agents/             Platform lead agent
-connectors/         MCP + OpenAPI + HTTP recipes
-openapi/            Conductor OpenAPI snapshot
-python/             pip package mystorax-conductor-mcp
-scripts/            MCP server + OpenAPI refresh
-install.sh          Full local install
-uninstall.sh        Remove local install
-verify.sh           Live smoke
-AGENTS.md           Agent contract
-FRONT_ONBOARD.md    Equal onboard for every front
-```
 
 ## Doctrine (locked)
 
@@ -76,11 +62,3 @@ FRONT_ONBOARD.md    Equal onboard for every front
 | Sources | Perplexity default `web`; select academic/github/hf/cf |
 | Refuse | Computer / ASI / agentic_research / Spark / local LLM / agy |
 | Secrets | Never commit tokens |
-
-## Docs
-
-- [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) — per-front install
-- [`AGENTS.md`](AGENTS.md) — operator contract
-- [`PACKAGE.md`](PACKAGE.md) — component matrix
-- [`connectors/mystorax-conductor.md`](connectors/mystorax-conductor.md) — MCP / HTTP
-- [`connectors/chatgpt-actions.md`](connectors/chatgpt-actions.md) — Actions

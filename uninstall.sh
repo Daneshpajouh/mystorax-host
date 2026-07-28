@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 # Uninstall MystoraX host package from local fronts (keeps secrets).
 set -euo pipefail
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"
+rm -rf "${HOME}/.cursor/plugins/local/mystorax-host"
+rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"   # legacy name
 rm -rf "${HOME}/.cursor/plugins/local/mystorax-gateway"
+rm -rf "${HOME}/.claude/plugins/local/mystorax-host"
+rm -rf "${HOME}/.claude/plugins/local/mystorax-skills"
 # Remove MCP registration only for mystorax-conductor (preserve other servers)
 python3 - <<'PY'
 import json

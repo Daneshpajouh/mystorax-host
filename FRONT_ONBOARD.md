@@ -1,6 +1,6 @@
 # Front onboard — MystoraX host package (all hosts equal)
 
-Installable package: plugins + skills + MCP + OpenAPI connector.  
+Installable package: plugins + MCP + OpenAPI connector + doctrine modules.  
 Same Conductor. Same token. Same discovery. Pick a front — doctrine does not change.
 
 ## Shared prerequisites
@@ -20,13 +20,11 @@ Cold start: `GET $MYSTORAX_CONDUCTOR_URL/v1/hosts/manifest`
 ## Full local install (Cursor + Claude + Codex + MCP)
 
 ```bash
-git clone https://github.com/Daneshpajouh/mystorax-skills.git && cd mystorax-skills
+git clone https://github.com/Daneshpajouh/mystorax-host.git && cd mystorax-host
 export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
 ./install.sh
 ./verify.sh
 ```
-
-Installs Cursor plugin, Claude plugin dir, Codex/Claude skills, MCP registration, optional pip entrypoint.
 
 ---
 
@@ -46,9 +44,9 @@ curl -fsS -X POST "$MYSTORAX_CONDUCTOR_URL/v1/goal" \
 
 ## Cursor
 
-`./install.sh` → `~/.cursor/plugins/local/mystorax-skills` (+ gateway alias) + MCP.
+`./install.sh` → `~/.cursor/plugins/local/mystorax-host` (+ gateway alias) + MCP.
 
-Enable plugin / MCP **mystorax-conductor**. Slash commands under `commands/`.
+Enable plugin / MCP **mystorax-conductor**.
 
 ---
 
@@ -56,7 +54,7 @@ Enable plugin / MCP **mystorax-conductor**. Slash commands under `commands/`.
 
 ```bash
 ./install.sh
-claude --plugin-dir ~/.claude/plugins/local/mystorax-skills
+claude --plugin-dir ~/.claude/plugins/local/mystorax-host
 # or from clone:
 claude --plugin-dir .
 ```
@@ -65,7 +63,7 @@ claude --plugin-dir .
 
 ## Claude Science
 
-Equal peer — Import from GitHub → `Daneshpajouh/mystorax-skills`.  
+Equal peer — Import from GitHub → `Daneshpajouh/mystorax-host`.  
 Credentials: `MYSTORAX_HOST_TOKEN`. Connectors: MCP or HTTP (`connectors/`).  
 Optional bio: `axiom-science-os` (does not replace Conductor).
 
@@ -73,7 +71,7 @@ Optional bio: `axiom-science-os` (does not replace Conductor).
 
 ## Codex
 
-`./install.sh` syncs skills + MCP the same as Cursor.
+`./install.sh` syncs skill modules + MCP the same as Cursor.
 
 ---
 
@@ -103,5 +101,5 @@ Text goals via Conductor. File packages still need ChatGPT or Perplexity authors
 
 ```bash
 ./verify.sh
-./uninstall.sh   # removes local plugins/skills MCP entry; keeps secrets
+./uninstall.sh
 ```
