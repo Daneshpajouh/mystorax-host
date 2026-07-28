@@ -11,7 +11,7 @@
     {
       "name": "mystorax-host",
       "source": "./",
-      "description": "Conductor host package with plugins, MCP, OpenAPI, agents, commands, and portable skills for equal peer fronts.",
+      "description": "Conductor host package with plugins, MCP, OpenAPI, agents, commands, and doctrine modules for equal peer fronts.",
       "keywords": [
         "mystorax",
         "conductor",
