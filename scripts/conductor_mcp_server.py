@@ -10,6 +10,7 @@ local Conductor modules. Capability lives on Conductor:
 Env:
   MYSTORAX_CONDUCTOR_URL   default https://mx.parallex.ca
   MYSTORAX_HOST_TOKEN      Bearer host ingress (writes / axiom proxy)
+  MYSTORAX_HOST_TOKEN_FILE optional path; defaults to the existing MystoraX secret
 
 Stdlib only. Any front (Cursor, Claude, Codex, curl) uses the same HTTP SSoT.
 """
@@ -24,7 +25,7 @@ import urllib.request
 from typing import Any
 
 SERVER_NAME = "mystorax-conductor"
-SERVER_VERSION = "2.1.0"
+SERVER_VERSION = "2.2.0"
 PROTOCOL_VERSION = "2024-11-05"
 
 
@@ -37,11 +38,20 @@ def _base_url() -> str:
 
 
 def _host_token() -> str:
-    return (
+    token = (
         os.environ.get("MYSTORAX_HOST_TOKEN")
         or os.environ.get("MYSTORAX_HOST_INGRESS_TOKEN")
         or ""
     ).strip()
+    if token:
+        return token
+    token_file = os.environ.get("MYSTORAX_HOST_TOKEN_FILE")
+    if not token_file:
+        token_file = os.path.expanduser("~/.mystorax/secrets/host_ingress_token")
+    try:
+        return open(token_file, encoding="utf-8").read().strip()
+    except (OSError, UnicodeError):
+        return ""
 
 
 def _http(

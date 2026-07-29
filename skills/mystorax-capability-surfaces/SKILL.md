@@ -27,3 +27,5 @@ description: >
 | **refused** | HARD fail-closed — never fake success |
 
 Flags ≠ universal capability. Compound kill-tests still bound claims.
+
+Use before claiming or dispatching a capability: `mystorax_surfaces` or `mystorax_capability_lookup`; HTTP clients call `GET /v1/surfaces`. Example: look up `computer` and honor the returned refused status.

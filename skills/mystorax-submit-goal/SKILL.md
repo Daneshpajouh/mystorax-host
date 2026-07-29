@@ -45,3 +45,5 @@ Route file packages to **chatgpt** or **perplexity**. Gemini stays text-only (Co
 ## Perplexity sources
 
 Pass `bridge_opts.sources` or `metadata.sources`, e.g. `["academic","github"]`. Default web-only. See `mystorax-perplexity-sources`.
+
+Use for all governed work after discovery. MCP calls `mystorax_submit_goal`; HTTP calls `POST /v1/goal`. A successful async response returns a job/wait id for the wait-wake module.

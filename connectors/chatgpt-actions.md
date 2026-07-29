@@ -37,6 +37,10 @@ Never paste tokens into the OpenAPI file or this repo.
 
 ChatGPT Desktop can use the same OpenAPI Actions when available; otherwise use any MCP/HTTP front with this pack installed.
 
+Load/read `mystorax-platform`, `mystorax-routing`, and the task row in `MODULE_INDEX.md` as instructions/knowledge. Discovery is `getRoutingGuide`, `listSurfaces`, `getHostManifest`; submit with `submitGoal`.
+
 ## Smoke
 
 Call `getHostManifest`, then `submitGoal` with text `Reply with exactly: MYSTORAX_OK`, `effort=low`, `job_class=research`.
+
+Fixes: import failure → use the live YAML URL; 401 → reset Bearer authentication without editing the schema; Action unavailable in Desktop → use the documented companion HTTP/MCP path. Importability is verified; a vendor UI click is not claimed as live proof.

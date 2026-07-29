@@ -49,3 +49,7 @@ Fronts are interchangeable. Doctrine does not change per UI.
 ## Bio pairing
 
 Optional: `axiom-science-os` for domain bio skills/MCP. Conductor remains platform ingress.
+
+## Invoke
+
+For every non-trivial task, call `mystorax_routing_guide` / `GET /v1/routing-guide`, then `mystorax_surfaces` / `GET /v1/surfaces`, and submit through `mystorax_submit_goal` / `POST /v1/goal`.

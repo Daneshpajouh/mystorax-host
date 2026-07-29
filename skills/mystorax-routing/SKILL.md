@@ -34,3 +34,5 @@ Conductor `effort` maps per worker (`native_depth`). Never invent shared model n
 Do not split whole-project work into tiny asks. Prefer 50–200+ steps in one author session.
 Escalate ChatGPT depth (auto→thinking→pro) before switching providers.
 Soft warn ~150 steps; ceiling ~200 → checkpoint; HTTP 409 at ceiling requires operator escalation.
+
+Use before submission. MCP: `mystorax_routing_guide`. HTTP: `GET /v1/routing-guide`. Apply its returned worker/effort guidance to `mystorax_submit_goal` / `POST /v1/goal`.

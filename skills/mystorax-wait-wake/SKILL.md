@@ -22,3 +22,5 @@ Async accept returns `job_id` / `wait_id`.
 - Do not busy-loop Hands CLIs while bridges think
 - Author sessions survive wait/wake via job `bridge_payload.author_session`
 - On stall / ceiling: escalate or checkpoint — never silent truncate
+
+After submission, call `mystorax_job_status` / `GET /v1/jobs/{job_id}/status`; for long waits use `mystorax_wait_stream_hint` / `GET /v1/waits/{wait_id}/stream`. Cancel only with the documented job cancel route.

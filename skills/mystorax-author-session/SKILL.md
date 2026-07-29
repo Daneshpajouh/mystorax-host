@@ -25,3 +25,7 @@ Provider switch requires escalate-first; session survives wait/wake via job payl
 ## Related
 
 `mystorax-routing`, `mystorax-submit-goal`, `mystorax-wait-wake`, `mystorax-bridges-authors`.
+
+## Invoke
+
+When work needs multiple iterations, call `mystorax_submit_goal` / `POST /v1/goal` once with the full goal and reuse `metadata.author_session`; then use `mystorax_job_status` / `GET /v1/jobs/{id}/status`.

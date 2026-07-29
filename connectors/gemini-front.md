@@ -27,3 +27,7 @@ Refuse Computer / ASI / Spark / local LLM / agy.
 ## Smoke
 
 Low-effort text goal through Conductor; confirm no file artifact expected.
+
+Auth stays in the companion token file. First calls are routing guide, surfaces, then submit goal. Load `mystorax-platform`, `mystorax-bridges-authors`, and the task module from `MODULE_INDEX.md`.
+
+Fixes: file requested → route to ChatGPT/Perplexity; no HTTP tool in Gemini UI → use the companion; text route unavailable → fail closed. This is a documented text-only UI/companion path, not native Gemini MCP.

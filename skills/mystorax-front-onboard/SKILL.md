@@ -23,3 +23,5 @@ Read `FRONT_ONBOARD.md` and `AGENTS.md` in this pack. All fronts share one Condu
 ## Front-specific install
 
 Equal sections in `FRONT_ONBOARD.md`. No front owns doctrine.
+
+Start with `mystorax_hosts_manifest` / `GET /v1/hosts/manifest`, then routing, surfaces, and submit. Use the card in `connectors/` matching the current front and verify with `./verify.sh`.

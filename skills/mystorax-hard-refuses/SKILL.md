@@ -23,3 +23,5 @@ Computer Use, Tasks credits, ASI, agentic research, Spark launch, “run local L
 ## Check live
 
 `mystorax_surfaces` / `mystorax_capability_lookup` and routing guide `capability_registry.hard_refused`.
+
+Use before ambiguous routing. Call `mystorax_capability_lookup` or `GET /v1/surfaces`; if refused, return the refusal and do not call `mystorax_submit_goal`.

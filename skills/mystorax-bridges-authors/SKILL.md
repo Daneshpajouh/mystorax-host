@@ -24,3 +24,7 @@ Bridges **author**. Hands **apply**. Fronts never talk to bridge URLs directly â
 ## Sources
 
 Perplexity: see `mystorax-perplexity-sources`. Default web-only.
+
+## Invoke
+
+When choosing an author, call `mystorax_routing_guide` / `GET /v1/routing-guide`, then `mystorax_submit_goal` / `POST /v1/goal` with an optional `worker` hint. Never call bridge URLs directly.

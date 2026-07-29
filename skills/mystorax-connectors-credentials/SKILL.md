@@ -35,3 +35,7 @@ Not ChatGPT connectors — use `sources` ask field. See `mystorax-perplexity-sou
 - Commit tokens into `.mcp.json`, OpenAPI configs, or skills
 - Put Axiom tokens on the front when Conductor already holds them
 - Point connectors at Computer / ASI / local LLM
+
+## Invoke
+
+Before a write call, discover with `mystorax_hosts_manifest` / `GET /v1/hosts/manifest`. MCP reads the existing token-file reference at runtime; HTTP sends `Authorization: Bearer …`. Never move the secret into package configuration.
