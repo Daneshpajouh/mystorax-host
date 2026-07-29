@@ -38,4 +38,4 @@ Not ChatGPT connectors — use `sources` ask field. See `mystorax-perplexity-sou
 
 ## Invoke
 
-Before a write call, discover with `mystorax_hosts_manifest` / `GET /v1/hosts/manifest`. MCP reads the existing token-file reference at runtime; HTTP sends `Authorization: Bearer …`. Never move the secret into package configuration.
+Before a write call, bootstrap with HTTP `GET /v1/hosts/manifest` (no manifest MCP tool). MCP reads the existing token-file reference at runtime; HTTP sends `Authorization: Bearer …`. Never move the secret into package configuration.

@@ -25,7 +25,7 @@ First three calls on every capable front:
 2. `mystorax_surfaces` / `GET /v1/surfaces`
 3. `mystorax_submit_goal` / `POST /v1/goal`
 
-Cold bootstrap: `mystorax_hosts_manifest` / `GET /v1/hosts/manifest`.
+Cold bootstrap is HTTP-only: `GET /v1/hosts/manifest` (there is no separate manifest MCP tool).
 
 ## Pick your front
 
