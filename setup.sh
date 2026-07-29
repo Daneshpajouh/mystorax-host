@@ -80,11 +80,10 @@ if ((SKIP_VERIFY == 0)); then
   }
 fi
 
-# Convenience: mx on PATH when ~/.local/bin is available
-if [[ -d "$HOME/.local/bin" || mkdir -p "$HOME/.local/bin" ]]; then
-  ln -sfn "$ROOT/mx" "$HOME/.local/bin/mx"
-  echo "cli=mx → $HOME/.local/bin/mx  (open a new terminal if 'mx' is not found)"
-fi
+# Convenience: mx on PATH when ~/.local/bin exists (or can be created)
+mkdir -p "$HOME/.local/bin"
+ln -sfn "$ROOT/mx" "$HOME/.local/bin/mx"
+echo "cli=mx → $HOME/.local/bin/mx  (new terminal if 'mx' is not found yet)"
 
 chmod +x "$ROOT/mx" "$ROOT/setup.sh" "$ROOT/install.sh" "$ROOT/verify.sh" 2>/dev/null || true
 
