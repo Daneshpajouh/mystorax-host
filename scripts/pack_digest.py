@@ -12,7 +12,13 @@ args = parser.parse_args()
 root = args.root.resolve()
 h = hashlib.sha256()
 excluded = {".git", ".local", "__pycache__"}
-for path in sorted(p for p in root.rglob("*") if p.is_file() and not excluded.intersection(p.parts)):
+for path in sorted(
+    p
+    for p in root.rglob("*")
+    if p.is_file()
+    and not excluded.intersection(p.parts)
+    and not any(part.endswith(".egg-info") for part in p.parts)
+):
     rel = path.relative_to(root).as_posix()
     h.update(rel.encode() + b"\0")
     h.update(b"x" if path.stat().st_mode & stat.S_IXUSR else b"-")
