@@ -1,11 +1,25 @@
 {
   "name": "mystorax-host",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Installable MystoraX host package \u2014 Conductor plugins, MCP, OpenAPI, HTTP connectors for every front.",
   "author": {
     "name": "MystoraX"
   },
+  "homepage": "https://github.com/Daneshpajouh/mystorax-host",
+  "repository": "https://github.com/Daneshpajouh/mystorax-host",
   "skills": "./skills/",
   "agents": "./agents/",
-  "mcpServers": "./.mcp.json"
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "MystoraX",
+    "shortDescription": "Conductor goals, bridges, Science OS",
+    "longDescription": "Submit research/planning/coding goals to MystoraX Conductor. Bridges do heavy research so front usage stays light. Includes routing, submit goal, wait/wake, and Science OS helpers.",
+    "developerName": "MystoraX",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ]
+  }
 }

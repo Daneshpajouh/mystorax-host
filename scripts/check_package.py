@@ -19,7 +19,7 @@ live_mcp_tools = {
     "mystorax_science_status", "mystorax_science_resume",
     "mystorax_axiom_tool_search", "mystorax_axiom_tool_call",
 }
-if version != "2.3.1" or registry.get("version") != version:
+if version != "2.3.2" or registry.get("version") != version:
     errors.append("version mismatch")
 if len(ids) != 16 or len(set(ids)) != 16 or sorted(ids) != skill_ids:
     errors.append("module registry must match exactly 16 skill directories")

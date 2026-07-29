@@ -136,21 +136,74 @@ if want codex; then
   CODEX_DST="$HOME/.codex/plugins/local/mystorax-host"
   install_tree codex "$CODEX_DST"
   sync_skills codex "$HOME/.codex/skills"
-  if command -v codex >/dev/null 2>&1; then
-    if codex mcp get mystorax-conductor >/dev/null 2>&1; then
-      echo "codex.mcp=existing (preserved; verify or remove explicitly before replacement)"
-    elif ((DRY_RUN)); then
-      echo "would_register: codex mcp mystorax-conductor"
-    else
-      codex mcp add mystorax-conductor \
-        --env "MYSTORAX_CONDUCTOR_URL=$CONDUCTOR_URL" \
-        --env "MYSTORAX_HOST_TOKEN_FILE=$TOKEN_FILE" \
-        -- python3 "$CODEX_DST/$SERVER_REL"
-      python3 "$ROOT/scripts/install_state.py" own-registration \
-        --ledger "$LEDGER" --version "$VERSION" --front codex --name mystorax-conductor
-    fi
+
+  # Codex app Plugins panel only shows marketplace plugins — register personal.
+  PERSONAL_PLUGIN="$HOME/plugins/mystorax-host"
+  MARKETPLACE_JSON="$HOME/.agents/plugins/marketplace.json"
+  if ((DRY_RUN)); then
+    echo "would_register: Codex personal marketplace plugin mystorax-host@personal"
   else
-    echo "codex.mcp=NOT_RUN (codex CLI unavailable)"
+    mkdir -p "$HOME/plugins" "$HOME/.agents/plugins"
+    rsync -a --delete \
+      --exclude .git --exclude '*.egg-info' --exclude '__pycache__' \
+      "$ROOT/" "$PERSONAL_PLUGIN/"
+    # Absolute token path in plugin MCP config (HOME expansion is unreliable).
+    python3 - "$PERSONAL_PLUGIN" "$TOKEN_FILE" "$CONDUCTOR_URL" <<'PY'
+import json, sys
+from pathlib import Path
+root, token_file, url = Path(sys.argv[1]), sys.argv[2], sys.argv[3]
+mcp = {
+    "mcpServers": {
+        "mystorax-conductor": {
+            "command": "python3",
+            "args": ["scripts/conductor_mcp_server.py"],
+            "cwd": ".",
+            "env": {
+                "MYSTORAX_CONDUCTOR_URL": url,
+                "MYSTORAX_HOST_TOKEN_FILE": token_file,
+            },
+        }
+    }
+}
+(root / ".mcp.json").write_text(json.dumps(mcp, indent=2) + "\n")
+mp = Path.home() / ".agents/plugins/marketplace.json"
+if mp.exists():
+    data = json.loads(mp.read_text())
+else:
+    data = {"name": "personal", "interface": {"displayName": "Personal"}, "plugins": []}
+names = {p.get("name") for p in data.get("plugins", [])}
+if "mystorax-host" not in names:
+    data.setdefault("plugins", []).append(
+        {
+            "name": "mystorax-host",
+            "source": {"source": "local", "path": "./plugins/mystorax-host"},
+            "policy": {"installation": "AVAILABLE", "authentication": "ON_INSTALL"},
+            "category": "Productivity",
+        }
+    )
+    mp.parent.mkdir(parents=True, exist_ok=True)
+    mp.write_text(json.dumps(data, indent=2) + "\n")
+PY
+    if command -v codex >/dev/null 2>&1; then
+      if codex plugin list 2>/dev/null | grep -q 'mystorax-host@personal'; then
+        echo "codex.plugin=mystorax-host@personal (already installed)"
+      else
+        codex plugin add mystorax-host@personal >/dev/null
+        echo "codex.plugin=mystorax-host@personal installed"
+      fi
+      if codex mcp get mystorax-conductor >/dev/null 2>&1; then
+        echo "codex.mcp=existing (preserved; verify or remove explicitly before replacement)"
+      else
+        codex mcp add mystorax-conductor \
+          --env "MYSTORAX_CONDUCTOR_URL=$CONDUCTOR_URL" \
+          --env "MYSTORAX_HOST_TOKEN_FILE=$TOKEN_FILE" \
+          -- python3 "$CODEX_DST/$SERVER_REL"
+        python3 "$ROOT/scripts/install_state.py" own-registration \
+          --ledger "$LEDGER" --version "$VERSION" --front codex --name mystorax-conductor
+      fi
+    else
+      echo "codex.plugin=NOT_RUN (codex CLI unavailable) — files staged at $PERSONAL_PLUGIN"
+    fi
   fi
 fi
 

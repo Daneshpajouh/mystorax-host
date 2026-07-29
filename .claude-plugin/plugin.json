@@ -1,6 +1,6 @@
 {
   "name": "mystorax-host",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Installable MystoraX host package \u2014 Conductor plugins, MCP, OpenAPI, HTTP connectors for every front.",
   "author": {
     "name": "MystoraX"

@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.3.2 — 2026-07-29
+
+- Register MystoraX as Codex **Personal** marketplace plugin so it appears in the ChatGPT/Codex app Plugins panel.
+
 ## 2.3.1 — 2026-07-29
 
 - One-command Mac setup: `./setup.sh` (token → install → verify).
