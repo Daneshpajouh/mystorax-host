@@ -30,4 +30,4 @@ Skip unavailable lanes (fail closed per lane). Live probe: `GET /v1/hosts/manife
 
 If no Hands remain: author-bridge completion or explicit terminal failure — bridges do not silently gain write authority.
 
-Before applying an artifact, call `mystorax_hosts_manifest` / `GET /v1/hosts/manifest` and select the first healthy CLI in the locked order. No Conductor MCP tool turns a plugin or skill into a Hand.
+Before applying an artifact, call HTTP `GET /v1/hosts/manifest` (no manifest MCP tool) and select the first healthy CLI in the locked order. No Conductor MCP tool turns a plugin or skill into a Hand.
