@@ -2,6 +2,9 @@
 
 Same SSoT for every host UI. Pick a transport — doctrine does not change.
 
+Per-front detail: `cursor.md`, `claude-code.md`, `claude-science.md`, `codex.md`, `chatgpt-actions.md`, `perplexity-front.md`, `gemini-front.md`, `http.md`.  
+Matrix: `../FRONT_MATRIX.md`.
+
 ## A — MCP stdio (Cursor / Claude Code / Codex / local agents)
 
 Pack `.mcp.json` → server **`mystorax-conductor`** (stdio → Conductor HTTP).  

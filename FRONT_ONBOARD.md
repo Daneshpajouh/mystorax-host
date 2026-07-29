@@ -1,34 +1,115 @@
-# Front onboard — MystoraX host package (all hosts equal)
+# Front onboard — MystoraX host package (all peers equal)
 
-Installable package: plugins + MCP + OpenAPI connector + doctrine modules.  
-Same Conductor. Same token. Same discovery. Pick a front — doctrine does not change.
+Installable package: plugins + MCP + OpenAPI + HTTP connectors + doctrine modules.  
+Same Conductor. Same token. Same discovery. Pick a front — **doctrine does not change**.
+
+Conductor SSoT: `https://mx.parallex.ca`  
+Product: **`mystorax-host`** (never “skills”)  
+Version: see `VERSION`
 
 ## Shared prerequisites
 
-- `MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca`
-- `MYSTORAX_HOST_TOKEN` = host ingress bearer (never commit)
-- Axiom / bio MCP tokens stay on **Conductor only**
+| Item | Value |
+|------|--------|
+| URL | `MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca` |
+| Auth | Bearer `MYSTORAX_HOST_TOKEN` (file: `~/.mystorax/secrets/host_ingress_token`) |
+| Axiom / bio tokens | Stay on **Conductor only** — fronts do not need them for normal goals |
 
-## Shared first calls
+## Shared first calls (every front)
 
-1. Routing guide → 2. Surfaces → 3. `submit_goal` / `POST /v1/goal`
-
-Cold start: `GET $MYSTORAX_CONDUCTOR_URL/v1/hosts/manifest`
+1. Routing guide → 2. Surfaces → 3. Submit goal  
+Cold bootstrap: `GET $MYSTORAX_CONDUCTOR_URL/v1/hosts/manifest`
 
 ---
 
-## Full local install (Cursor + Claude + Codex + MCP)
+## Full local install (Cursor + Claude Code + Codex + MCP)
 
 ```bash
 git clone https://github.com/Daneshpajouh/mystorax-host.git && cd mystorax-host
+export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
 export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
 ./install.sh
 ./verify.sh
 ```
 
+Per-front recipes: `connectors/`. Matrix: `PACKAGE.md`. Readiness: `FRONT_MATRIX.md`.
+
+---
+
+## Cursor
+
+See `connectors/cursor.md`.
+
+`./install.sh` → `~/.cursor/plugins/local/mystorax-host` (+ `mystorax-gateway` alias) + MCP `mystorax-conductor`.  
+Enable the plugin and MCP. First tools: `mystorax_routing_guide` → `mystorax_surfaces` → `mystorax_submit_goal`.
+
+---
+
+## Claude Code
+
+See `connectors/claude-code.md`.
+
+```bash
+./install.sh
+claude --plugin-dir ~/.claude/plugins/local/mystorax-host
+```
+
+Doctrine modules also sync to `~/.claude/skills/mystorax-*`.
+
+---
+
+## Claude Science
+
+See `connectors/claude-science.md`.
+
+Equal peer — Import from GitHub → `Daneshpajouh/mystorax-host`.  
+Credentials: `MYSTORAX_HOST_TOKEN`. Use MCP and/or HTTP.  
+Optional bio pack: `axiom-science-os` (does **not** replace Conductor).
+
+---
+
+## Codex
+
+See `connectors/codex.md`.
+
+`./install.sh` syncs `.codex-plugin`, doctrine modules under `~/.codex/skills/mystorax-*`, and MCP the same as Cursor when Codex reads the pack MCP config.
+
+---
+
+## ChatGPT (Actions / Desktop)
+
+See `connectors/chatgpt-actions.md`.
+
+1. Import OpenAPI: `https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml`  
+2. Bearer `MYSTORAX_HOST_TOKEN`  
+3. `getRoutingGuide` → `listSurfaces` → `submitGoal`
+
+---
+
+## Perplexity (as a *front*)
+
+See `connectors/perplexity-front.md`.
+
+Perplexity is also a **bridge author** inside Conductor. As a human front:
+
+- Put Conductor doctrine + HTTP recipe in a Space / custom instructions.
+- Prefer submitting goals through Companion MCP/HTTP (Cursor/Claude/Codex/curl) while using Perplexity UI for reading/research.
+- Never ask Perplexity Computer / ASI / agentic research — HARD refused.
+
+---
+
+## Gemini (as a *front* / UI)
+
+See `connectors/gemini-front.md`.
+
+Text / long-context goals via Conductor only. **No file packages** from Gemini.  
+File authorship stays on ChatGPT or Perplexity bridges.
+
 ---
 
 ## HTTP / curl (any agent)
+
+See `connectors/http.md`.
 
 ```bash
 export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
@@ -42,56 +123,7 @@ curl -fsS -X POST "$MYSTORAX_CONDUCTOR_URL/v1/goal" \
 
 ---
 
-## Cursor
-
-`./install.sh` → `~/.cursor/plugins/local/mystorax-host` (+ gateway alias) + MCP.
-
-Enable plugin / MCP **mystorax-conductor**.
-
----
-
-## Claude Code
-
-```bash
-./install.sh
-claude --plugin-dir ~/.claude/plugins/local/mystorax-host
-# or from clone:
-claude --plugin-dir .
-```
-
----
-
-## Claude Science
-
-Equal peer — Import from GitHub → `Daneshpajouh/mystorax-host`.  
-Credentials: `MYSTORAX_HOST_TOKEN`. Connectors: MCP or HTTP (`connectors/`).  
-Optional bio: `axiom-science-os` (does not replace Conductor).
-
----
-
-## Codex
-
-`./install.sh` syncs skill modules + MCP the same as Cursor.
-
----
-
-## ChatGPT (Actions / Desktop)
-
-See `connectors/chatgpt-actions.md`.
-
-1. Import OpenAPI: live URL or `openapi/conductor.openapi.yaml`
-2. Bearer `MYSTORAX_HOST_TOKEN`
-3. `getRoutingGuide` → `listSurfaces` → `submitGoal`
-
----
-
-## Gemini as a *front* (UI only)
-
-Text goals via Conductor. File packages still need ChatGPT or Perplexity authors.
-
----
-
-## Custom MCP / OpenAPI host
+## Custom MCP host
 
 `connectors/mystorax-conductor.md` + `pip install -e .` → `mystorax-conductor-mcp`.
 

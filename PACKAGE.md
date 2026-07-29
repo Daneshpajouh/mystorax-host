@@ -1,6 +1,6 @@
 # MystoraX host package — component matrix
 
-Product: **mystorax-host** (not a skills-only repo).
+Product: **mystorax-host** v2.1.0 (not a skills-only repo).
 
 | Path | Component | Fronts |
 |------|-----------|--------|
@@ -16,9 +16,18 @@ Product: **mystorax-host** (not a skills-only repo).
 | `scripts/conductor_mcp_server.py` | MCP server | MCP fronts |
 | `python/mystorax_conductor_mcp/` | pip MCP connector | Any Python host |
 | `openapi/conductor.openapi.yaml` | OpenAPI connector | ChatGPT Actions |
-| `connectors/` | MCP + OpenAPI + HTTP recipes | All |
+| `connectors/cursor.md` | Cursor recipe | Cursor |
+| `connectors/claude-code.md` | Claude Code recipe | Claude Code |
+| `connectors/claude-science.md` | Claude Science recipe | Claude Science |
+| `connectors/codex.md` | Codex recipe | Codex |
+| `connectors/chatgpt-actions.md` | OpenAPI Actions | ChatGPT |
+| `connectors/perplexity-front.md` | Perplexity UI front | Perplexity |
+| `connectors/gemini-front.md` | Gemini UI front | Gemini |
+| `connectors/http.md` | Raw HTTP | Any |
+| `connectors/mystorax-conductor.md` | Transport overview | All |
+| `FRONT_ONBOARD.md` / `FRONT_MATRIX.md` | Equal-peer onboard | All |
 | `install.sh` / `uninstall.sh` / `verify.sh` | Lifecycle | Local installs |
-| `AGENTS.md` / `FRONT_ONBOARD.md` | Contracts | All |
+| `AGENTS.md` | Agent contract | All |
 
 Canonical: `https://github.com/Daneshpajouh/mystorax-host`  
 SSoT: `https://mx.parallex.ca`

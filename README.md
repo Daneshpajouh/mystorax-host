@@ -1,26 +1,28 @@
 # MystoraX Host Package
 
-Installable **MystoraX host package** for every front: plugins + MCP + OpenAPI connector + doctrine modules + HTTP.
+Installable **MystoraX host package** for every front: plugins + MCP + OpenAPI + HTTP connectors + doctrine modules.
 
-**MystoraX** is the product. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Gemini-as-UI, and HTTP are **peer fronts** — equal; none owns doctrine.
+**MystoraX** is the product. Cursor, Claude Code, Claude Science, Codex, ChatGPT, Perplexity (UI), Gemini (UI), and HTTP are **peer fronts** — equal; none owns doctrine.
 
 | Component | What you get |
 |-----------|----------------|
 | **Cursor plugin** | Rules, agents, commands, doctrine modules, MCP |
-| **Claude plugin** | Plugin dir + marketplace entry + MCP |
-| **Codex plugin** | Plugin + MCP |
+| **Claude plugin** | Plugin dir + marketplace + MCP |
+| **Codex plugin** | Plugin + MCP + doctrine modules |
 | **MCP connector** | `mystorax-conductor` stdio (`pip install -e .`) |
 | **OpenAPI connector** | ChatGPT Actions (`openapi/conductor.openapi.yaml`) |
 | **HTTP connector** | Raw curl / custom clients |
+| **Per-front recipes** | `connectors/*.md` |
 | **Installers** | `./install.sh` · `./verify.sh` · `./uninstall.sh` |
 
 Capability lives on Conductor: `https://mx.parallex.ca`.
 
 - Repo: [`Daneshpajouh/mystorax-host`](https://github.com/Daneshpajouh/mystorax-host)
-- Version: [`VERSION`](VERSION) (`2.0.0`)
+- Version: [`VERSION`](VERSION) (`2.1.0`)
+- Readiness matrix: [`FRONT_MATRIX.md`](FRONT_MATRIX.md)
 - Optional bio pack: [`axiom-science-os`](https://github.com/Daneshpajouh/axiom-science-os) (orthogonal)
 
-> Formerly published as `mystorax-skills`. That name is retired — this is the host package.
+> Formerly published as `mystorax-skills`. That name is retired.
 
 ## Install
 
@@ -36,11 +38,13 @@ export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
 | Front | How |
 |-------|-----|
 | Cursor / Claude Code / Codex | `./install.sh` |
-| Claude Science | Import from GitHub → `Daneshpajouh/mystorax-host` |
+| Claude Science | Import GitHub `Daneshpajouh/mystorax-host` |
 | ChatGPT | OpenAPI → `connectors/chatgpt-actions.md` |
-| HTTP / any agent | Bearer token + `POST /v1/goal` |
+| Perplexity UI | `connectors/perplexity-front.md` + companion HTTP/MCP |
+| Gemini UI | `connectors/gemini-front.md` (text-only) |
+| HTTP / any agent | `connectors/http.md` |
 
-Equal-weight steps: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) · Agent contract: [`AGENTS.md`](AGENTS.md) · Matrix: [`PACKAGE.md`](PACKAGE.md)
+Equal-weight onboard: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md) · Contract: [`AGENTS.md`](AGENTS.md) · Matrix: [`PACKAGE.md`](PACKAGE.md)
 
 ## Discovery (every front)
 

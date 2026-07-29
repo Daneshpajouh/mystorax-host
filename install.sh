@@ -102,6 +102,14 @@ mkdir -p "$(dirname "$CLAUDE_PLUGIN_DST")"
 rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CLAUDE_PLUGIN_DST/"
 mcp_cfg_json > "$CLAUDE_PLUGIN_DST/.mcp.json"
 echo "claude_plugin=$CLAUDE_PLUGIN_DST"
+rm -rf "${HOME}/.claude/plugins/local/mystorax-skills"
+
+# Codex plugin mirror (local discovery path)
+CODEX_PLUGIN_DST="${HOME}/.codex/plugins/local/mystorax-host"
+mkdir -p "$(dirname "$CODEX_PLUGIN_DST")"
+rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CODEX_PLUGIN_DST/"
+mcp_cfg_json > "$CODEX_PLUGIN_DST/.mcp.json"
+echo "codex_plugin=$CODEX_PLUGIN_DST"
 
 # --- Optional pip MCP entrypoint ---
 if command -v pip3 >/dev/null 2>&1; then
@@ -114,7 +122,10 @@ echo "host_token_set=$([[ -n "$TOKEN" ]] && echo yes || echo no)"
 echo "chatgpt_openapi_live=$CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml"
 echo "chatgpt_openapi_pack=$ROOT/openapi/conductor.openapi.yaml"
 echo "manifest=$CONDUCTOR_URL/v1/hosts/manifest"
+echo "front_matrix=$ROOT/FRONT_MATRIX.md"
+echo "front_onboard=$ROOT/FRONT_ONBOARD.md"
 echo "connectors=$ROOT/connectors/"
 echo "verify=$ROOT/verify.sh"
 echo "version=$(tr -d ' \n' < "$ROOT/VERSION" 2>/dev/null || echo unknown)"
+echo "peers=cursor,claude-code,claude-science,codex,chatgpt,perplexity-front,gemini-front,http"
 echo "done"

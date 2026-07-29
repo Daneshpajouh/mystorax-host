@@ -20,3 +20,7 @@ You are a **front**. Capability lives on **Conductor**.
 ## Auth
 
 Bearer `MYSTORAX_HOST_TOKEN`. Same token for every front.
+
+## Fronts
+
+Equal peers — see `FRONT_MATRIX.md` and `connectors/`.
