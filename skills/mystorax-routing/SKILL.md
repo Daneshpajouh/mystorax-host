@@ -35,4 +35,10 @@ Do not split whole-project work into tiny asks. Prefer 50–200+ steps in one au
 Escalate ChatGPT depth (auto→thinking→pro) before switching providers.
 Soft warn ~150 steps; ceiling ~200 → checkpoint; HTTP 409 at ceiling requires operator escalation.
 
+## Front token conservation
+
+Research, search, brainstorm, prior-art, and long synthesis → author bridges via
+`mystorax_submit_goal`. Fronts and Hands/CLI models do not burn their own quota
+on those loops. See `mystorax-front-heavy-lift`.
+
 Use before submission. MCP: `mystorax_routing_guide`. HTTP: `GET /v1/routing-guide`. Apply its returned worker/effort guidance to `mystorax_submit_goal` / `POST /v1/goal`.

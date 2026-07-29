@@ -1,6 +1,6 @@
 # MystoraX host package — component matrix
 
-Product: **mystorax-host** v2.2.0 (not a skills-only repo).
+Product: **mystorax-host** v2.3.0 (not a skills-only repo).
 
 | Path | Component | Fronts |
 |------|-----------|--------|
@@ -33,4 +33,4 @@ Canonical: `https://github.com/Daneshpajouh/mystorax-host`
 SSoT: `https://mx.parallex.ca`
 
 Task-first module map: [`MODULE_INDEX.md`](MODULE_INDEX.md)
-Machine-readable module contract: [`modules.json`](modules.json) — exactly 15 modules.
+Machine-readable module contract: [`modules.json`](modules.json) — exactly 16 modules (includes `mystorax-front-heavy-lift`).

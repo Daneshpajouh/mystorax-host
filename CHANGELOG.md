@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.3.0 — 2026-07-29
+
+- Added `mystorax-front-heavy-lift`: fronts and Hands/CLI models offload research/search/brainstorm to author bridges via Conductor to conserve usage limits.
+- Documented that explicit `job_class=research|planning` stays on bridges (Conductor no longer auto-promotes those into Science OS campaigns).
+- Wired token-conservation doctrine into platform/routing/science/submit skills, Cursor always-on rule, AGENTS.md, and all peer-front connector cards.
+- Bumped module contract to **16** skills; package version **2.3.0**.
+
 ## 2.2.0 — 2026-07-28
 
 - Added credential-free, explicit Cursor/Claude/Codex MCP registration and conservative ownership tracking.

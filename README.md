@@ -1,18 +1,27 @@
 # mystorax-host
 
-The complete, front-agnostic MystoraX host package: native plugins, MCP, OpenAPI, HTTP connectors, installers, rules, commands, agents, and 15 doctrine modules. Capability lives on the Conductor at `https://mx.parallex.ca`; no front owns doctrine.
+The complete, front-agnostic MystoraX host package: native plugins, MCP, OpenAPI, HTTP connectors, installers, rules, commands, agents, and 16 doctrine modules. Capability lives on the Conductor at `https://mx.parallex.ca`; no front owns doctrine.
 
-## Start here — under 30 seconds
+## Start here — under 30 seconds (MacBook)
 
 Prerequisite: your issued token already exists at `~/.mystorax/secrets/host_ingress_token`.
 
 ```bash
 git clone https://github.com/Daneshpajouh/mystorax-host.git
 cd mystorax-host
+export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
+export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
 ./install.sh --dry-run
 ./install.sh --front all
 ./install.sh --check
 ./verify.sh
+```
+
+From the MystoraX monorepo instead of GitHub:
+
+```bash
+cd /Users/studio/mystorax-platform/deploy/oci/hosts/mystorax-host
+./install.sh --front all && ./install.sh --check && ./verify.sh
 ```
 
 The installer never copies the token value into MCP/plugin config. It registers Cursor, Claude Code, and Codex against the same package-local MCP bridge and syncs all doctrine modules to Claude/Codex skill directories. Its final checklist tells you exactly what to enable or reload.
@@ -23,9 +32,13 @@ First three calls on every capable front:
 
 1. `mystorax_routing_guide` / `GET /v1/routing-guide`
 2. `mystorax_surfaces` / `GET /v1/surfaces`
-3. `mystorax_submit_goal` / `POST /v1/goal`
+3. `mystorax_submit_goal` / `POST /v1/goal` — use `job_class=research|planning` for heavy lift
 
 Cold bootstrap is HTTP-only: `GET /v1/hosts/manifest` (there is no separate manifest MCP tool).
+
+## Front token conservation (all fronts)
+
+Research, search, brainstorm, prior-art, and long synthesis go to **author bridges** via Conductor. Fronts (Cursor, Claude Code, Claude Science, Codex, UIs) and thin Hands/CLI models must not burn their own usage limits on those loops. Load `mystorax-front-heavy-lift`. Never use `job_class=science` for brainstorm — that opens a Science OS campaign.
 
 ## Pick your front
 
@@ -49,7 +62,7 @@ Use the task-first [`MODULE_INDEX.md`](MODULE_INDEX.md) to map a task to the exa
 
 Pack contents:
 
-- `skills/`: 15 Agent Skills doctrine modules (wire format, not the product name)
+- `skills/`: 16 Agent Skills doctrine modules (wire format, not the product name)
 - `rules/`, `commands/`, `agents/`: always-on and guided agent behavior
 - `.cursor-plugin/`, `.claude-plugin/`, `.codex-plugin/`: native package manifests
 - `scripts/conductor_mcp_server.py`: stdio MCP facade over Conductor HTTP
@@ -60,6 +73,7 @@ Pack contents:
 ## Locked boundaries
 
 - Conductor HTTP is the SSoT; prefer `POST /v1/goal`.
+- Fronts offload research/brainstorm to bridges (`mystorax-front-heavy-lift`).
 - Files: ChatGPT or Perplexity only. Gemini is text-only.
 - Thin Hands order: `gemini → copilot → codex → cursor-agent → claude`.
 - Science auto-stops at `EVIDENCE`; never auto-CERTIFY.
@@ -67,4 +81,4 @@ Pack contents:
 - Chrome CDP handles asks; Comet handles Browser Control.
 - Never commit or print secrets. No Apple runtime is required.
 
-Version: [`VERSION`](VERSION) (`2.2.0`) · Package map: [`PACKAGE.md`](PACKAGE.md) · Onboarding contract: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md)
+Version: [`VERSION`](VERSION) (`2.3.0`) · Package map: [`PACKAGE.md`](PACKAGE.md) · Onboarding contract: [`FRONT_ONBOARD.md`](FRONT_ONBOARD.md)

@@ -5,7 +5,7 @@ Same Conductor. Same token. Same discovery. Pick a front — **doctrine does not
 
 Conductor SSoT: `https://mx.parallex.ca`  
 Product: **`mystorax-host`** (never “skills”)  
-Version: see `VERSION`
+Version: see `VERSION` (`2.3.0`)
 
 ## Shared prerequisites
 
@@ -17,20 +17,36 @@ Version: see `VERSION`
 
 ## Shared first calls (every front)
 
-1. Routing guide → 2. Surfaces → 3. Submit goal  
+1. Routing guide → 2. Surfaces → 3. Submit goal (`job_class=research|planning` for heavy lift)  
 Cold bootstrap: `GET $MYSTORAX_CONDUCTOR_URL/v1/hosts/manifest`
+
+Front token conservation: load `mystorax-front-heavy-lift`. Offload research/brainstorm to bridges.
 
 ---
 
-## Full local install (Cursor + Claude Code + Codex + MCP)
+## Full local install (MacBook: Cursor + Claude Code + Codex + MCP)
 
 ```bash
+# 1) Token (once)
+mkdir -p ~/.mystorax/secrets
+# put the issued host ingress token in:
+#   ~/.mystorax/secrets/host_ingress_token
+chmod 600 ~/.mystorax/secrets/host_ingress_token
+
+# 2) Pack
 git clone https://github.com/Daneshpajouh/mystorax-host.git && cd mystorax-host
+# OR monorepo path on this machine:
+# cd /Users/studio/mystorax-platform/deploy/oci/hosts/mystorax-host
+
 export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
 export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
-./install.sh
+
+./install.sh --front all
+./install.sh --check
 ./verify.sh
 ```
+
+Then enable/reload each front (installer prints the checklist).
 
 Per-front recipes: `connectors/`. Matrix: `PACKAGE.md`. Readiness: `FRONT_MATRIX.md`.
 
@@ -40,7 +56,7 @@ Per-front recipes: `connectors/`. Matrix: `PACKAGE.md`. Readiness: `FRONT_MATRIX
 
 See `connectors/cursor.md`.
 
-`./install.sh` → `~/.cursor/plugins/local/mystorax-host` (+ `mystorax-gateway` alias) + MCP `mystorax-conductor`.  
+`./install.sh --front cursor` → `~/.cursor/plugins/local/mystorax-host` + MCP `mystorax-conductor`.  
 Enable the plugin and MCP. First tools: `mystorax_routing_guide` → `mystorax_surfaces` → `mystorax_submit_goal`.
 
 ---
@@ -50,7 +66,7 @@ Enable the plugin and MCP. First tools: `mystorax_routing_guide` → `mystorax_s
 See `connectors/claude-code.md`.
 
 ```bash
-./install.sh
+./install.sh --front claude
 claude --plugin-dir ~/.claude/plugins/local/mystorax-host
 ```
 
@@ -72,7 +88,7 @@ Optional bio pack: `axiom-science-os` (does **not** replace Conductor).
 
 See `connectors/codex.md`.
 
-`./install.sh` syncs `.codex-plugin`, doctrine modules under `~/.codex/skills/mystorax-*`, and MCP the same as Cursor when Codex reads the pack MCP config.
+`./install.sh --front codex` syncs `.codex-plugin`, doctrine modules under `~/.codex/skills/mystorax-*`, and MCP the same as Cursor when Codex reads the pack MCP config.
 
 ---
 

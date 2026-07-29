@@ -1,4 +1,4 @@
-# Front readiness matrix — MystoraX host package 2.2.0
+# Front readiness matrix — MystoraX host package 2.3.0
 
 All fronts are **peers**. Transport differs; doctrine does not.
 
@@ -20,6 +20,7 @@ Native status is deliberately not overstated: Perplexity and Gemini UIs are comp
 
 - SSoT: Conductor HTTP `https://mx.parallex.ca`
 - Prefer `POST /v1/goal` over direct bridges/CLIs
+- **Front token conservation:** research / search / brainstorm / synthesis → author bridges; fronts judge + ledger; Hands/CLI models submit HEAVY asks to bridges
 - Files: ChatGPT or Perplexity only
 - Gemini: text / long-context only
 - Hands thin: `gemini → copilot → codex → cursor-agent → claude`

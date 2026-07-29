@@ -37,6 +37,14 @@ curl -fsS -X POST "$MYSTORAX_CONDUCTOR_URL/v1/goal" \
 - Poll `mystorax_job_status` → `GET /v1/jobs/{id}/status`
 - Or SSE: `mystorax_wait_stream_hint` → `/v1/waits/{id}/stream`
 - Do not spin Hands CLIs waiting on bridge latency
+- Do not re-run the same research/brainstorm loop on the front while waiting
+
+## Heavy lift defaults
+
+For literature, search, brainstorm, estimand redesign, or synthesis: prefer
+`job_class=research|planning`, `effort=high|xhigh`, `async_mode=true`, and a
+single multi-step `text`. Hands/CLI models submit the same shape instead of
+answering from CLI context. See `mystorax-front-heavy-lift`.
 
 ## Files
 

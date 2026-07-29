@@ -2,7 +2,9 @@
 
 Works for every front that can hold a bearer token — no plugin required.
 
-Load/read `mystorax-platform`, `mystorax-routing`, and the task module from `MODULE_INDEX.md`.
+Load/read `mystorax-platform`, `mystorax-front-heavy-lift`, `mystorax-routing`, and the task module from `MODULE_INDEX.md`.
+
+For literature / brainstorm / prior-art, keep `job_class` as `research` or `planning` (not `science`) so Conductor routes to author bridges.
 
 ## Env
 

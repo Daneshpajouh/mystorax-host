@@ -1,32 +1,48 @@
 # Codex connector
 
-## Install
+## Install (this MacBook)
 
 ```bash
+# Token once (if missing)
+mkdir -p ~/.mystorax/secrets
+# place issued host ingress token at:
+#   ~/.mystorax/secrets/host_ingress_token
+chmod 600 ~/.mystorax/secrets/host_ingress_token
+
+export MYSTORAX_CONDUCTOR_URL=https://mx.parallex.ca
+export MYSTORAX_HOST_TOKEN="$(cat ~/.mystorax/secrets/host_ingress_token)"
+
+# From GitHub (published pack) OR from the monorepo checkout:
 git clone https://github.com/Daneshpajouh/mystorax-host.git && cd mystorax-host
+# monorepo alternative:
+# cd /Users/studio/mystorax-platform/deploy/oci/hosts/mystorax-host
+
 ./install.sh --front codex
+./install.sh --check
+./verify.sh
 ```
 
 Installs:
 
-- pack `.codex-plugin/` into the host tree used by Codex plugin discovery when pointed at this dir
-- doctrine modules → `~/.codex/skills/mystorax-*`
-- explicit `mystorax-conductor` MCP registration through `codex mcp add`
+- `~/.codex/plugins/local/mystorax-host`
+- doctrine modules → `~/.codex/skills/mystorax-*` (includes `mystorax-front-heavy-lift`)
+- MCP `mystorax-conductor` via `codex mcp add` (preserves an existing registration)
 
-Point Codex at the plugin directory or rely on synced skills + MCP server `mystorax-conductor`.
+Restart Codex, then confirm `codex mcp get mystorax-conductor`.
 
 ## First tools
 
-1. `mystorax_routing_guide`  
-2. `mystorax_surfaces`  
-3. `mystorax_submit_goal`
+1. `mystorax_routing_guide`
+2. `mystorax_surfaces`
+3. `mystorax_submit_goal` with `job_class=research|planning` for heavy lift
 
-Load `mystorax-platform`, `mystorax-routing`, and the task module from `MODULE_INDEX.md`.
+Load `mystorax-platform`, `mystorax-front-heavy-lift`, `mystorax-routing`, and the task module from `MODULE_INDEX.md`.
 
-## Notes
+## Heavy lift (Codex as front + Hands)
 
-- Codex **CLI Hands** (thin apply) are separate from Codex-as-front.
-- Conductor effort ≠ Codex `model_reasoning_effort` names — see routing guide `native_depth`.
+- As a **front**: do not burn Codex usage on literature/brainstorm — submit Conductor goals to Perplexity/ChatGPT bridges.
+- As a **thin Hand**: apply/download/check only after bridge artifacts. HEAVY design/research asks → `POST /v1/goal`, not CLI-context answers.
+- Conductor `effort` ≠ Codex `model_reasoning_effort` names — see routing guide `native_depth`.
 
 ## Smoke
 

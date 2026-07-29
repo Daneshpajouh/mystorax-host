@@ -17,6 +17,7 @@ All modules are peer-front doctrine in Agent Skills wire format. Live capability
 | Keep long work coherent | `mystorax-author-session` | `mystorax_submit_goal` | `POST /v1/goal` | Reuse `metadata.author_session` |
 | Handle cost/approval | `mystorax-cost-human-gate` | `mystorax_job_status` | `GET /v1/jobs/{id}/status` | Halt on 402/409; request operator action |
 | Run Science | `mystorax-science-os` | `mystorax_science_resume` | `POST /v1/hosts/mcp/tools/call` | Resume at most to `EVIDENCE` |
+| Offload research/brainstorm | `mystorax-front-heavy-lift` | `mystorax_submit_goal` | `POST /v1/goal` | Preserve front usage; bridges do heavy lift |
 | Select research sources | `mystorax-perplexity-sources` | `mystorax_submit_goal` | `POST /v1/goal` | `bridge_opts.sources:["academic"]` |
 | Onboard a peer front | `mystorax-front-onboard` | — (HTTP bootstrap) | `GET /v1/hosts/manifest` | Follow the matching connector card |
 

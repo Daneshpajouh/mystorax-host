@@ -19,10 +19,10 @@ live_mcp_tools = {
     "mystorax_science_status", "mystorax_science_resume",
     "mystorax_axiom_tool_search", "mystorax_axiom_tool_call",
 }
-if version != "2.2.0" or registry.get("version") != version:
+if version != "2.3.0" or registry.get("version") != version:
     errors.append("version mismatch")
-if len(ids) != 15 or len(set(ids)) != 15 or sorted(ids) != skill_ids:
-    errors.append("module registry must match exactly 15 skill directories")
+if len(ids) != 16 or len(set(ids)) != 16 or sorted(ids) != skill_ids:
+    errors.append("module registry must match exactly 16 skill directories")
 for item in modules:
     for field in ("id", "task", "tool", "http"):
         if not item.get(field):

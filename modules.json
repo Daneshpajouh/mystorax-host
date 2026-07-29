@@ -1,6 +1,6 @@
 {
   "schema": "mystorax.host.modules.v1",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "authority": {
     "manifest": "https://mx.parallex.ca/v1/hosts/manifest",
     "openapi": "https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml"
@@ -19,6 +19,7 @@
     {"id":"mystorax-author-session","task":"keep long work coherent","tool":"mystorax_submit_goal","http":"POST /v1/goal"},
     {"id":"mystorax-cost-human-gate","task":"handle cost or approval","tool":"mystorax_job_status","http":"GET /v1/jobs/{id}/status"},
     {"id":"mystorax-science-os","task":"run a Science campaign","tool":"mystorax_science_resume","http":"POST /v1/hosts/mcp/tools/call"},
+    {"id":"mystorax-front-heavy-lift","task":"offload research/brainstorm to bridges","tool":"mystorax_submit_goal","http":"POST /v1/goal"},
     {"id":"mystorax-perplexity-sources","task":"select research sources","tool":"mystorax_submit_goal","http":"POST /v1/goal"},
     {"id":"mystorax-front-onboard","task":"onboard a peer front","tool":"HTTP bootstrap; no MCP tool","http":"GET /v1/hosts/manifest"}
   ]

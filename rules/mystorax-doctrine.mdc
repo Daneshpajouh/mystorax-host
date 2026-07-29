@@ -7,8 +7,9 @@ alwaysApply: true
 
 - Prefer Conductor `POST /v1/goal` / `mystorax_submit_goal` over bridges or CLIs.
 - Discover: routing guide → surfaces → submit goal. Bootstrap: `GET /v1/hosts/manifest`.
+- **Front token conservation:** research / search / brainstorm / prior-art / long synthesis → author bridges via `job_class=research|planning`. Do not burn front/CLI usage on those loops. Never use `job_class=science` for brainstorm (that opens a campaign).
 - Files: ChatGPT or Perplexity only. Gemini text-only.
-- Hands: thin apply/download/check — `gemini → copilot → codex → cursor-agent → claude`.
+- Hands: thin apply/download/check — `gemini → copilot → codex → cursor-agent → claude`. HEAVY Hands asks also submit Conductor goals to bridges.
 - Multi-step work stays in ONE author session (50–200+ steps). Escalate before switch.
 - Science auto-resume stops at EVIDENCE. Never auto-CERTIFY.
 - HARD refuse: Computer / ASI / agentic_research / Spark / local LLM / agy execute.
