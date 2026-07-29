@@ -1,6 +1,6 @@
 # MystoraX host package — component matrix
 
-Product: **mystorax-host** v2.3.0 (not a skills-only repo).
+Product: **mystorax-host** v2.3.1 (not a skills-only repo).
 
 | Path | Component | Fronts |
 |------|-----------|--------|

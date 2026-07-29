@@ -1,0 +1,124 @@
+#!/usr/bin/env bash
+# Tiny MystoraX client: ask Conductor / check job status.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+CONDUCTOR_URL="${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}"
+TOKEN_FILE="${MYSTORAX_HOST_TOKEN_FILE:-$HOME/.mystorax/secrets/host_ingress_token}"
+
+token() {
+  if [[ -n "${MYSTORAX_HOST_TOKEN:-}" ]]; then
+    printf '%s' "$MYSTORAX_HOST_TOKEN"
+    return
+  fi
+  if [[ -f "$TOKEN_FILE" ]]; then
+    tr -d '\r\n' < "$TOKEN_FILE"
+    return
+  fi
+  echo "No token. Run: ./setup.sh --token PASTE_YOUR_TOKEN" >&2
+  exit 3
+}
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./mx "your research or planning question"
+  ./mx status <job_id>
+  ./mx guide
+  ./mx health
+
+Examples:
+  ./mx "Redesign the estimand for haplotype-aware off-target risk"
+  ./mx status 9802808df25943b49f96ee9380719424
+EOF
+}
+
+AUTH="$(token)"
+CMD="${1:-}"
+
+if [[ -z "$CMD" || "$CMD" == "-h" || "$CMD" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ "$CMD" == "health" ]]; then
+  curl -fsS "$CONDUCTOR_URL/health"
+  echo
+  exit 0
+fi
+
+if [[ "$CMD" == "guide" ]]; then
+  curl -fsS -H "Authorization: Bearer $AUTH" "$CONDUCTOR_URL/v1/routing-guide" \
+    | python3 -c 'import json,sys; d=json.load(sys.stdin); print(d.get("guide_markdown") or json.dumps(d.get("doctrine",{}), indent=2))'
+  exit 0
+fi
+
+if [[ "$CMD" == "status" ]]; then
+  JOB="${2:?job_id required}"
+  curl -fsS -H "Authorization: Bearer $AUTH" "$CONDUCTOR_URL/v1/jobs/$JOB/status" \
+    | python3 -c '
+import json,sys
+d=json.load(sys.stdin)
+print("status:", d.get("status") or d.get("state"))
+bridge=(d.get("bridge") or {})
+print("bridge:", bridge.get("provider") or bridge.get("job_class") or "")
+res=d.get("result") or {}
+# unwrap common shapes
+text=""
+if isinstance(res, dict):
+  inner=res.get("result") if isinstance(res.get("result"), dict) else res
+  for k in ("text","answer","content","output","message","prose"):
+    v=inner.get(k) if isinstance(inner, dict) else None
+    if isinstance(v, str) and v.strip():
+      text=v; break
+  if not text and isinstance(inner, dict):
+    bp=inner.get("bridge_payload") or res.get("bridge_payload") or {}
+    if isinstance(bp, dict):
+      for k in ("text","answer","content","output"):
+        v=bp.get(k)
+        if isinstance(v, str) and v.strip():
+          text=v; break
+print("chars:", len(text))
+if text:
+  print("---")
+  print(text[:4000])
+  if len(text)>4000:
+    print("… truncated; full body in job status JSON")
+'
+  exit 0
+fi
+
+# Default: treat all args as the goal text
+TEXT="$*"
+HOST_ID="${MX_HOST:-custom}"
+
+RESP="$(curl -fsS -X POST "$CONDUCTOR_URL/v1/goal" \
+  -H "Authorization: Bearer $AUTH" \
+  -H "Content-Type: application/json" \
+  -d "$(python3 -c '
+import json,os,sys
+print(json.dumps({
+  "text": sys.argv[1],
+  "job_class": os.environ.get("MX_JOB_CLASS","research"),
+  "effort": os.environ.get("MX_EFFORT","high"),
+  "host": os.environ.get("MX_HOST","custom"),
+  "dispatch": True,
+  "async_mode": True,
+  "bridge_opts": {"mode": os.environ.get("MX_MODE","research"), "sources": ["academic","web"]},
+}))
+' "$TEXT")")"
+
+python3 -c '
+import json,sys
+d=json.loads(sys.argv[1])
+jid=d.get("job_id") or d.get("run_id") or d.get("id") or ""
+wid=d.get("wait_id") or jid
+print("submitted")
+print("job_id:", jid)
+print("wait_id:", wid)
+print()
+print("Poll:")
+print(f"  ./mx status {jid}")
+print()
+print("Tip: keep this terminal free; bridges do the heavy lift.")
+' "$RESP"

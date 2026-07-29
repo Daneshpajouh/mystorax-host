@@ -155,20 +155,19 @@ if want codex; then
 fi
 
 check_token_reference || true
+
+# If env token is set but file is missing, persist it for MCP servers.
+if [[ -n "${MYSTORAX_HOST_TOKEN:-}" && ! -f "$TOKEN_FILE" ]]; then
+  mkdir -p "$(dirname "$TOKEN_FILE")"
+  printf '%s\n' "$MYSTORAX_HOST_TOKEN" > "$TOKEN_FILE"
+  chmod 600 "$TOKEN_FILE"
+  echo "token=saved ($TOKEN_FILE)"
+fi
+
 echo
-echo "MystoraX $VERSION installed. Enable/reload:"
-echo "  Cursor: Settings → Plugins/MCP → enable mystorax-host + mystorax-conductor; reload."
-echo "  Claude Code: restart, then run /mcp and confirm mystorax-conductor."
-echo "  Claude Science: import/open this GitHub pack, load mystorax-platform + mystorax-front-heavy-lift, use companion MCP/HTTP."
-echo "  Codex: restart, confirm mystorax-conductor and mystorax-* skills (incl. mystorax-front-heavy-lift)."
-echo "  ChatGPT: import $CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml and set Bearer auth."
-echo "  Perplexity: paste connectors/perplexity-front.md into Space instructions; use companion HTTP."
-echo "  Gemini: paste connectors/gemini-front.md; text-only, companion HTTP."
-echo "  HTTP: follow connectors/http.md."
-echo
-echo "Heavy lift: use job_class=research|planning (not science) so bridges author; fronts conserve tokens."
-echo "First calls: mystorax_routing_guide → mystorax_surfaces → mystorax_submit_goal"
-echo "Check: ./install.sh --check"
-echo "Smoke: ./verify.sh"
+echo "MystoraX $VERSION installed."
+echo "Next: ./setup.sh   (or already done) then  ./mx \"your question\""
+echo "Reload Cursor / Claude Code / Codex once so MCP picks up."
+echo "Check: ./install.sh --check   Smoke: ./verify.sh"
 ((MACHINE)) && echo "result=installed version=$VERSION front=$FRONT"
 exit 0

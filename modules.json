@@ -1,6 +1,6 @@
 {
   "schema": "mystorax.host.modules.v1",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "authority": {
     "manifest": "https://mx.parallex.ca/v1/hosts/manifest",
     "openapi": "https://mx.parallex.ca/v1/hosts/chatgpt/openapi.yaml"

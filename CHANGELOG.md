@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.1 — 2026-07-29
+
+- One-command Mac setup: `./setup.sh` (token → install → verify).
+- Tiny client: `./mx "question"` and `./mx status <job_id>`.
+- README / connectors cut to the shortest working path.
+
 ## 2.3.0 — 2026-07-29
 
 - Added `mystorax-front-heavy-lift`: fronts and Hands/CLI models offload research/search/brainstorm to author bridges via Conductor to conserve usage limits.
