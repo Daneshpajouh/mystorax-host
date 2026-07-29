@@ -2,6 +2,8 @@
 
 Works for every front that can hold a bearer token — no plugin required.
 
+Load/read `mystorax-platform`, `mystorax-routing`, and the task module from `MODULE_INDEX.md`.
+
 ## Env
 
 ```bash

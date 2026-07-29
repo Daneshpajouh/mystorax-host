@@ -1,35 +1,29 @@
 #!/usr/bin/env bash
-# Uninstall MystoraX host package from local fronts (keeps secrets).
+# Remove only installer-owned, unmodified mystorax-host content. Secrets are retained.
 set -euo pipefail
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-host"
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"   # legacy name
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-gateway"
-rm -rf "${HOME}/.claude/plugins/local/mystorax-host"
-rm -rf "${HOME}/.claude/plugins/local/mystorax-skills"
-rm -rf "${HOME}/.codex/plugins/local/mystorax-host"
-# Remove MCP registration only for mystorax-conductor (preserve other servers)
-python3 - <<'PY'
-import json
-from pathlib import Path
-p = Path.home() / ".cursor" / "mcp.json"
-if p.is_file():
-    try:
-        data = json.loads(p.read_text())
-    except Exception:
-        raise SystemExit(0)
-    servers = data.get("mcpServers") or {}
-    if "mystorax-conductor" in servers:
-        del servers["mystorax-conductor"]
-        data["mcpServers"] = servers
-        p.write_text(json.dumps(data, indent=2) + "\n")
-        print("removed mystorax-conductor from", p)
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+LEDGER="$HOME/.mystorax/host-install/ownership.json"
+if [[ ! -f "$LEDGER" ]]; then
+  echo "no ownership ledger; refusing broad cleanup" >&2
+  exit 3
+fi
+
+# Remove official-CLI registrations only when the ledger says this installer created them.
+for front in claude codex; do
+  owned="$(python3 - "$LEDGER" "$front" <<'PY'
+import json, sys
+d=json.load(open(sys.argv[1]))
+r=(d.get("registrations") or {}).get(sys.argv[2]) or {}
+print("yes" if r.get("created_by_installer") else "no")
 PY
-for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
-  [[ -d "$base" ]] || continue
-  for d in "$base"/mystorax-*; do
-    [[ -e "$d" ]] || continue
-    rm -rf "$d"
-    echo "removed $d"
-  done
+)"
+  if [[ "$owned" == yes ]] && command -v "$front" >/dev/null 2>&1; then
+    if [[ "$front" == claude ]]; then claude mcp remove --scope user mystorax-conductor || true
+    else codex mcp remove mystorax-conductor || true
+    fi
+  fi
 done
-echo "uninstall_done (secrets retained)"
+
+python3 "$ROOT/scripts/install_state.py" uninstall \
+  --ledger "$LEDGER" --version "$(tr -d ' \r\n' < "$ROOT/VERSION")" --home "$HOME"
+echo "uninstall_done (secrets and modified/user-owned content retained)"

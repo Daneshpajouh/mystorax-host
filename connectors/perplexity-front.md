@@ -27,6 +27,12 @@ Science stops at EVIDENCE. Formulate goals for POST /v1/goal; do not invent brid
 
 Default `web`. Selectable: academic, github, huggingface, cloudflare. Notion opt-in only.
 
+## Card
+
+Auth stays in the companion token file. First calls are routing guide, surfaces, then submit goal. Load `mystorax-platform`, `mystorax-perplexity-sources`, and the task module from `MODULE_INDEX.md`. Smoke with companion `./verify.sh`.
+
+Fixes: no HTTP tool in the UI → use curl/native companion; sources wrong → set `bridge_opts.sources`; file work must route through the Perplexity or ChatGPT author bridge. This is a documented UI/companion path, not a claim of native Perplexity MCP.
+
 ## HARD refuse
 
 Never request Perplexity Computer / ASI / agentic_research / computer_use.

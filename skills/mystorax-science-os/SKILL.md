@@ -27,3 +27,5 @@ Durable campaign state. Bridges author phase material into checkpoints with
 ## Bio MCP
 
 `mystorax_axiom_tool_search` / `mystorax_axiom_tool_call` — allowlisted; fail closed until Conductor has axiom token. Optional pair pack: `axiom-science-os`.
+
+Use `mystorax_science_status` to inspect and `mystorax_science_resume` to advance. HTTP-only fronts call `POST /v1/hosts/mcp/tools/call` with the same tool name and arguments. Never advance automatically past `EVIDENCE`.

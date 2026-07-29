@@ -22,3 +22,5 @@ description: >
 ## Never
 
 Bypass gates by switching fronts or inventing local compute.
+
+Inspect a blocked job with `mystorax_job_status` / `GET /v1/jobs/{id}/status`. On 402 or 409, stop and obtain the documented human decision; do not retry through another front.

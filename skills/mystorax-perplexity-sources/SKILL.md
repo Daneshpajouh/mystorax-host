@@ -37,3 +37,5 @@ Academic in sources also sets search focus to academic when unset.
 ## Refused
 
 Never pass `computer`, `computer_use`, `asi`, `tasks`, or agentic research as sources — burns paid Computer credits; Conductor/bridges fail closed.
+
+Use with `mystorax_submit_goal` / `POST /v1/goal`; put selectors in `bridge_opts.sources`. Example: `{"bridge_opts":{"sources":["academic","github"]}}`.

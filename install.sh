@@ -1,131 +1,173 @@
 #!/usr/bin/env bash
-# Install the full MystoraX host package on every local front.
-# Components: Cursor/Claude/Codex plugins, doctrine modules, rules, commands, MCP, OpenAPI.
+# Install mystorax-host for native peer fronts without copying credential values.
 set -euo pipefail
+
 ROOT="$(cd "$(dirname "$0")" && pwd)"
+VERSION="$(tr -d ' \r\n' < "$ROOT/VERSION")"
 CONDUCTOR_URL="${MYSTORAX_CONDUCTOR_URL:-https://mx.parallex.ca}"
-SERVER_PY="$ROOT/scripts/conductor_mcp_server.py"
 TOKEN_FILE="${MYSTORAX_HOST_TOKEN_FILE:-$HOME/.mystorax/secrets/host_ingress_token}"
-TOKEN="${MYSTORAX_HOST_TOKEN:-}"
-if [[ -z "$TOKEN" && -f "$TOKEN_FILE" ]]; then
-  TOKEN="$(tr -d ' \n\r' < "$TOKEN_FILE")"
-fi
+FRONT="all"
+MODE="install"
+DRY_RUN=0
+MACHINE=0
 
-chmod +x "$ROOT/install.sh" "$ROOT/verify.sh" "$ROOT/uninstall.sh" \
-  "$ROOT/scripts/refresh_openapi.sh" 2>/dev/null || true
-
-mcp_cfg_json() {
-  python3 - <<PY
-import json
-cfg = {
-  "command": "python3",
-  "args": ["""$SERVER_PY"""],
-  "env": {"MYSTORAX_CONDUCTOR_URL": """$CONDUCTOR_URL"""},
+usage() {
+  echo "usage: ./install.sh [--front all|cursor|claude|codex] [--dry-run|--check] [--machine]"
 }
-token = """$TOKEN"""
-if token:
-  cfg["env"]["MYSTORAX_HOST_TOKEN"] = token
-print(json.dumps({"mcpServers": {"mystorax-conductor": cfg}}, indent=2))
-PY
-}
-
-# --- Cursor plugin (full package) ---
-CURSOR_DST="${HOME}/.cursor/plugins/local/mystorax-host"
-mkdir -p "$(dirname "$CURSOR_DST")"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CURSOR_DST/"
-mcp_cfg_json > "$CURSOR_DST/.mcp.json"
-echo "cursor_plugin=$CURSOR_DST"
-# Drop legacy product name install
-rm -rf "${HOME}/.cursor/plugins/local/mystorax-skills"
-
-# Also install as mystorax-gateway alias (older Settings / manifests)
-GATEWAY_DST="${HOME}/.cursor/plugins/local/mystorax-gateway"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$GATEWAY_DST/"
-# Keep gateway plugin name for Settings that still look for mystorax-gateway
-python3 - <<PY
-import json
-from pathlib import Path
-for name in (".cursor-plugin", ".claude-plugin", ".codex-plugin"):
-    p = Path("""$GATEWAY_DST""") / name / "plugin.json"
-    if not p.is_file():
-        continue
-    data = json.loads(p.read_text())
-    data["name"] = "mystorax-gateway"
-    data["description"] = "Alias install of mystorax-host host package (front-agnostic Conductor)."
-    p.write_text(json.dumps(data, indent=2) + "\n")
-PY
-mcp_cfg_json > "$GATEWAY_DST/.mcp.json"
-echo "cursor_gateway_alias=$GATEWAY_DST"
-
-# User MCP merge
-USER_MCP="${HOME}/.cursor/mcp.json"
-python3 - <<PY
-import json
-from pathlib import Path
-user_mcp = Path("""$USER_MCP""")
-cfg = {
-  "command": "python3",
-  "args": ["""$SERVER_PY"""],
-  "env": {"MYSTORAX_CONDUCTOR_URL": """$CONDUCTOR_URL"""},
-}
-token = """$TOKEN"""
-if token:
-    cfg["env"]["MYSTORAX_HOST_TOKEN"] = token
-data = {"mcpServers": {}}
-if user_mcp.is_file():
-    try:
-        data = json.loads(user_mcp.read_text())
-        data.setdefault("mcpServers", {})
-    except Exception:
-        data = {"mcpServers": {}}
-data["mcpServers"]["mystorax-conductor"] = cfg
-user_mcp.parent.mkdir(parents=True, exist_ok=True)
-user_mcp.write_text(json.dumps(data, indent=2) + "\n")
-print("registered", user_mcp)
-PY
-
-# --- Doctrine modules (Agent Skills wire format for Claude/Codex dirs) ---
-for base in "${HOME}/.claude/skills" "${HOME}/.codex/skills"; do
-  mkdir -p "$base"
-  for d in "$ROOT"/skills/*; do
-    [[ -d "$d" ]] || continue
-    name="$(basename "$d")"
-    rsync -a "$d/" "$base/$name/"
-  done
-  rm -rf "$base/mystorax-claude-science-onboard"
-  echo "doctrine_modules -> $base"
+while (($#)); do
+  case "$1" in
+    --front) FRONT="${2:?missing front}"; shift 2 ;;
+    --dry-run) DRY_RUN=1; shift ;;
+    --check) MODE="check"; shift ;;
+    --machine) MACHINE=1; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage >&2; exit 2 ;;
+  esac
 done
+case "$FRONT" in all|cursor|claude|codex) ;; *) echo "unsupported front: $FRONT" >&2; exit 2 ;; esac
 
-# Claude plugin dir (optional --plugin-dir)
-CLAUDE_PLUGIN_DST="${HOME}/.claude/plugins/local/mystorax-host"
-mkdir -p "$(dirname "$CLAUDE_PLUGIN_DST")"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CLAUDE_PLUGIN_DST/"
-mcp_cfg_json > "$CLAUDE_PLUGIN_DST/.mcp.json"
-echo "claude_plugin=$CLAUDE_PLUGIN_DST"
-rm -rf "${HOME}/.claude/plugins/local/mystorax-skills"
+STATE_DIR="$HOME/.mystorax/host-install"
+LEDGER="$STATE_DIR/ownership.json"
+SERVER_REL="scripts/conductor_mcp_server.py"
 
-# Codex plugin mirror (local discovery path)
-CODEX_PLUGIN_DST="${HOME}/.codex/plugins/local/mystorax-host"
-mkdir -p "$(dirname "$CODEX_PLUGIN_DST")"
-rsync -a --delete --exclude '.git' --exclude 'python/*.egg-info' --exclude '**/__pycache__' "$ROOT/" "$CODEX_PLUGIN_DST/"
-mcp_cfg_json > "$CODEX_PLUGIN_DST/.mcp.json"
-echo "codex_plugin=$CODEX_PLUGIN_DST"
+want() { [[ "$FRONT" == all || "$FRONT" == "$1" ]]; }
+run() {
+  if ((DRY_RUN)); then printf 'would_run:'; printf ' %q' "$@"; printf '\n'
+  else "$@"
+  fi
+}
 
-# --- Optional pip MCP entrypoint ---
-if command -v pip3 >/dev/null 2>&1; then
-  pip3 install -e "$ROOT" --quiet 2>/dev/null && echo "pip_mcp=mystorax-conductor-mcp" || echo "pip_mcp=skipped"
-else
-  echo "pip_mcp=skipped"
+check_token_reference() {
+  if [[ -n "${MYSTORAX_HOST_TOKEN:-}" ]]; then
+    echo "auth=environment"
+  elif [[ -f "$TOKEN_FILE" ]]; then
+    echo "auth=token-file"
+  else
+    echo "auth=missing ($TOKEN_FILE)" >&2
+    return 3
+  fi
+}
+
+check_install() {
+  local failed=0
+  for path in \
+    "$HOME/.cursor/plugins/local/mystorax-host/VERSION" \
+    "$HOME/.claude/plugins/local/mystorax-host/VERSION" \
+    "$HOME/.codex/plugins/local/mystorax-host/VERSION"; do
+    [[ -f "$path" ]] || continue
+    [[ "$(tr -d ' \r\n' < "$path")" == "$VERSION" ]] || { echo "version_mismatch=$path" >&2; failed=1; }
+  done
+  python3 "$ROOT/scripts/install_state.py" check \
+    --ledger "$LEDGER" --version "$VERSION" --home "$HOME" || failed=1
+  check_token_reference || failed=1
+  ((failed == 0)) || return 1
+  echo "install_check=PASS version=$VERSION"
+}
+
+if [[ "$MODE" == check ]]; then check_install; exit; fi
+
+if ((DRY_RUN == 0)); then
+  mkdir -p "$STATE_DIR"
+  chmod 700 "$STATE_DIR"
 fi
 
-echo "host_token_set=$([[ -n "$TOKEN" ]] && echo yes || echo no)"
-echo "chatgpt_openapi_live=$CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml"
-echo "chatgpt_openapi_pack=$ROOT/openapi/conductor.openapi.yaml"
-echo "manifest=$CONDUCTOR_URL/v1/hosts/manifest"
-echo "front_matrix=$ROOT/FRONT_MATRIX.md"
-echo "front_onboard=$ROOT/FRONT_ONBOARD.md"
-echo "connectors=$ROOT/connectors/"
-echo "verify=$ROOT/verify.sh"
-echo "version=$(tr -d ' \n' < "$ROOT/VERSION" 2>/dev/null || echo unknown)"
-echo "peers=cursor,claude-code,claude-science,codex,chatgpt,perplexity-front,gemini-front,http"
-echo "done"
+install_tree() {
+  local front="$1" dst="$2"
+  run mkdir -p "$(dirname "$dst")"
+  run rsync -a --delete \
+    --exclude .git --exclude '.local' --exclude '*.egg-info' --exclude '__pycache__' \
+    "$ROOT/" "$dst/"
+  if ((DRY_RUN == 0)); then
+    python3 "$ROOT/scripts/install_state.py" own-tree \
+      --ledger "$LEDGER" --version "$VERSION" --front "$front" --path "$dst"
+  fi
+  echo "$front.plugin=$dst"
+}
+
+if want cursor; then
+  CURSOR_DST="$HOME/.cursor/plugins/local/mystorax-host"
+  install_tree cursor "$CURSOR_DST"
+  if ((DRY_RUN)); then
+    echo "would_register: Cursor mystorax-conductor"
+  else
+    python3 "$ROOT/scripts/install_state.py" merge-cursor \
+      --ledger "$LEDGER" --version "$VERSION" --home "$HOME" \
+      --server "$CURSOR_DST/$SERVER_REL" --url "$CONDUCTOR_URL" --token-file "$TOKEN_FILE"
+  fi
+fi
+
+sync_skills() {
+  local front="$1" base="$2"
+  run mkdir -p "$base"
+  for src in "$ROOT"/skills/*; do
+    [[ -d "$src" ]] || continue
+    local dst="$base/$(basename "$src")"
+    run rsync -a --delete "$src/" "$dst/"
+    if ((DRY_RUN == 0)); then
+      python3 "$ROOT/scripts/install_state.py" own-tree \
+        --ledger "$LEDGER" --version "$VERSION" --front "$front-skill" --path "$dst"
+    fi
+  done
+}
+
+if want claude; then
+  CLAUDE_DST="$HOME/.claude/plugins/local/mystorax-host"
+  install_tree claude "$CLAUDE_DST"
+  sync_skills claude "$HOME/.claude/skills"
+  if command -v claude >/dev/null 2>&1; then
+    if claude mcp get mystorax-conductor >/dev/null 2>&1; then
+      echo "claude.mcp=existing (preserved; verify or remove explicitly before replacement)"
+    elif ((DRY_RUN)); then
+      echo "would_register: claude mcp mystorax-conductor"
+    else
+      claude mcp add --scope user mystorax-conductor \
+        -e "MYSTORAX_CONDUCTOR_URL=$CONDUCTOR_URL" \
+        -e "MYSTORAX_HOST_TOKEN_FILE=$TOKEN_FILE" \
+        -- python3 "$CLAUDE_DST/$SERVER_REL"
+      python3 "$ROOT/scripts/install_state.py" own-registration \
+        --ledger "$LEDGER" --version "$VERSION" --front claude --name mystorax-conductor
+    fi
+  else
+    echo "claude.mcp=NOT_RUN (claude CLI unavailable)"
+  fi
+fi
+
+if want codex; then
+  CODEX_DST="$HOME/.codex/plugins/local/mystorax-host"
+  install_tree codex "$CODEX_DST"
+  sync_skills codex "$HOME/.codex/skills"
+  if command -v codex >/dev/null 2>&1; then
+    if codex mcp get mystorax-conductor >/dev/null 2>&1; then
+      echo "codex.mcp=existing (preserved; verify or remove explicitly before replacement)"
+    elif ((DRY_RUN)); then
+      echo "would_register: codex mcp mystorax-conductor"
+    else
+      codex mcp add mystorax-conductor \
+        --env "MYSTORAX_CONDUCTOR_URL=$CONDUCTOR_URL" \
+        --env "MYSTORAX_HOST_TOKEN_FILE=$TOKEN_FILE" \
+        -- python3 "$CODEX_DST/$SERVER_REL"
+      python3 "$ROOT/scripts/install_state.py" own-registration \
+        --ledger "$LEDGER" --version "$VERSION" --front codex --name mystorax-conductor
+    fi
+  else
+    echo "codex.mcp=NOT_RUN (codex CLI unavailable)"
+  fi
+fi
+
+check_token_reference || true
+echo
+echo "MystoraX $VERSION installed. Enable/reload:"
+echo "  Cursor: Settings → Plugins/MCP → enable mystorax-host + mystorax-conductor; reload."
+echo "  Claude Code: restart, then run /mcp and confirm mystorax-conductor."
+echo "  Claude Science: import/open this GitHub pack, load mystorax-platform, use companion MCP/HTTP."
+echo "  Codex: restart, confirm mystorax-conductor and mystorax-* skills."
+echo "  ChatGPT: import $CONDUCTOR_URL/v1/hosts/chatgpt/openapi.yaml and set Bearer auth."
+echo "  Perplexity: paste connectors/perplexity-front.md into Space instructions; use companion HTTP."
+echo "  Gemini: paste connectors/gemini-front.md; text-only, companion HTTP."
+echo "  HTTP: follow connectors/http.md."
+echo
+echo "First calls: mystorax_routing_guide → mystorax_surfaces → mystorax_submit_goal"
+echo "Check: ./install.sh --check"
+echo "Smoke: ./verify.sh"
+((MACHINE)) && echo "result=installed version=$VERSION front=$FRONT"
+exit 0
