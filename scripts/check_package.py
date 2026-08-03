@@ -13,22 +13,14 @@ modules = registry.get("modules") or []
 ids = [m["id"] for m in modules]
 skill_ids = sorted(p.parent.name for p in (root / "skills").glob("*/SKILL.md"))
 errors: list[str] = []
-live_mcp_tools = {
-    "mystorax_routing_guide", "mystorax_surfaces", "mystorax_capability_lookup",
-    "mystorax_submit_goal", "mystorax_job_status", "mystorax_wait_stream_hint",
-    "mystorax_science_status", "mystorax_science_resume",
-    "mystorax_axiom_tool_search", "mystorax_axiom_tool_call",
-}
-if version != "2.3.2" or registry.get("version") != version:
+if version != "3.0.0" or registry.get("version") != version:
     errors.append("version mismatch")
-if len(ids) != 16 or len(set(ids)) != 16 or sorted(ids) != skill_ids:
-    errors.append("module registry must match exactly 16 skill directories")
+if len(ids) != 2 or len(set(ids)) != 2 or sorted(ids) != skill_ids:
+    errors.append("module registry must match exactly two skill directories")
 for item in modules:
     for field in ("id", "task", "tool", "http"):
         if not item.get(field):
             errors.append(f"{item.get('id')} missing {field}")
-    if item.get("tool") not in live_mcp_tools | {"HTTP bootstrap; no MCP tool"}:
-        errors.append(f"{item.get('id')} references unknown MCP tool {item.get('tool')}")
 for path in root.rglob("*"):
     if not path.is_file() or ".git" in path.parts:
         continue

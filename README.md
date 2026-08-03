@@ -1,35 +1,19 @@
 # mystorax-host
 
-Talk to MystoraX from this Mac in **two commands**.
+The front-neutral distribution package for MystoraX.
 
-## Install
+For Claude Science, import this GitHub repository once. It intentionally
+publishes exactly two skills:
 
-```bash
-git clone https://github.com/Daneshpajouh/mystorax-host.git
-cd mystorax-host
-./setup.sh --token PASTE_YOUR_HOST_TOKEN
-```
+- `use-mystorax` — universal provider/CLI access
+- `use-mystorax-science` — the single consolidated Science capability
 
-Already have `~/.mystorax/secrets/host_ingress_token`?
+The skills contain no duplicated model, connector, tool, or specialist lists.
+They discover the current catalog from MystoraX at execution time.
 
-```bash
-./setup.sh
-```
+The NVIDIA BioNeMo Agent Toolkit remains a separate imported scientific-model
+toolkit. `Codex Delegate` also remains separate because it is a narrow handoff
+helper, not a duplicate Science product.
 
-## Use
-
-```bash
-mx "Your research or planning question"
-mx status <job_id>
-```
-
-Reload Cursor / Claude Code / Codex once. After that, just ask the agent — MystoraX is wired in.
-
-## That’s it
-
-| Need | Command |
-|------|---------|
-| Install | `./setup.sh` |
-| Ask | `mx "…"` |
-| Job status | `mx status <job_id>` |
-| Uninstall | `./uninstall.sh` |
+Retired names such as Axiom, CompBio, and Science OS are not separate products
+or skills.

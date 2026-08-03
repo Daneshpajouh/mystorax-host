@@ -1,7 +1,7 @@
 {
   "name": "mystorax-host",
-  "version": "2.3.2",
-  "description": "Installable MystoraX host package \u2014 Conductor plugins, MCP, OpenAPI, HTTP connectors for every front.",
+  "version": "3.0.0",
+  "description": "Front-neutral MystoraX access with one universal skill and one consolidated Science skill.",
   "author": {
     "name": "MystoraX"
   },

@@ -4,14 +4,14 @@
     "name": "MystoraX"
   },
   "metadata": {
-    "description": "Front-agnostic MystoraX Conductor host package",
-    "version": "2.2.0"
+    "description": "Front-neutral MystoraX skill package",
+    "version": "3.0.0"
   },
   "plugins": [
     {
       "name": "mystorax-host",
       "source": "./",
-      "description": "Conductor host package: plugins, MCP, OpenAPI connector \u2014 peer fronts equal",
+      "description": "One universal MystoraX skill and one consolidated Science skill",
       "keywords": [
         "mystorax",
         "conductor",

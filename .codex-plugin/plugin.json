@@ -1,7 +1,7 @@
 {
   "name": "mystorax-host",
-  "version": "2.3.2",
-  "description": "Installable MystoraX host package \u2014 Conductor plugins, MCP, OpenAPI, HTTP connectors for every front.",
+  "version": "3.0.0",
+  "description": "Front-neutral MystoraX access with one universal skill and one consolidated Science skill.",
   "author": {
     "name": "MystoraX"
   },
@@ -12,8 +12,8 @@
   "mcpServers": "./.mcp.json",
   "interface": {
     "displayName": "MystoraX",
-    "shortDescription": "Conductor goals, bridges, Science OS",
-    "longDescription": "Submit research/planning/coding goals to MystoraX Conductor. Bridges do heavy research so front usage stays light. Includes routing, submit goal, wait/wake, and Science OS helpers.",
+    "shortDescription": "Verified providers, CLIs, artifacts, and Science",
+    "longDescription": "Discover and invoke verified MystoraX capabilities through one universal contract and one consolidated Science extension.",
     "developerName": "MystoraX",
     "category": "Productivity",
     "capabilities": [
