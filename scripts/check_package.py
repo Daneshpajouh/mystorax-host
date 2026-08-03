@@ -13,7 +13,7 @@ modules = registry.get("modules") or []
 ids = [m["id"] for m in modules]
 skill_ids = sorted(p.parent.name for p in (root / "skills").glob("*/SKILL.md"))
 errors: list[str] = []
-if version != "3.0.0" or registry.get("version") != version:
+if version != "3.1.0" or registry.get("version") != version:
     errors.append("version mismatch")
 if len(ids) != 2 or len(set(ids)) != 2 or sorted(ids) != skill_ids:
     errors.append("module registry must match exactly two skill directories")

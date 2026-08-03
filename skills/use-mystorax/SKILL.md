@@ -30,6 +30,18 @@ a revision change, provider failure, expiry, or explicit operator request.
   connector, specialist, or compute target advertised in its live catalog.
 - Never silently retry or switch provider after external execution begins.
 
+For difficult work, use the catalog to separate heavy knowledge tasks from
+local execution. Give self-contained research, synthesis, brainstorming,
+critique, architecture, or code-draft packets to an advertised web author;
+keep bounded commands, tests, edits, and integration on an advertised CLI.
+Parallelize only independent packets across different adapters, respect each
+provider's queue, and reconcile every result against local facts.
+
+Overdeliver through completeness, verification, useful simplification,
+in-scope blocker removal, durable artifacts, and a clear next decisive action.
+Never overdeliver by inventing capabilities, hiding uncertainty, or taking
+destructive or external actions without authority.
+
 ## Attachments
 
 Send attachments only when the selected adapter advertises

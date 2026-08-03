@@ -19,6 +19,26 @@ CompBio, and Science OS are retired product labels, not separate front skills.
    catalog hash, operation, and operation-specific arguments.
 6. Poll the MystoraX job and verify all returned artifact hashes.
 
+## Portable specialists
+
+The specialist system is part of the live Science catalog, not a collection of
+duplicated front-specific skills.
+
+1. Call `specialists.list` and retain its catalog version and SHA-256.
+2. Call `specialists.get` with the advertised specialist ID before dispatch.
+3. Use `science-director` for cross-field or multi-step campaigns. It owns
+   routing and state, never scientific certification, and cannot waive data,
+   validity, safety, or adversarial vetoes.
+4. Assign one primary domain owner and only necessary cross-cutting reviewers.
+5. Preserve append-only evidence, artifacts, certifications, reviews, dissent,
+   hashes, and provenance.
+
+Use `science-discovery-hypothesis` for intelligent, original brainstorming.
+Require multiple discovery engines, rival hypotheses, decisive falsifiers,
+constructive and formal routes, new observables or measurements, useful nulls
+or barriers, and a wild-but-testable candidate. Treat novelty as a claim that
+must survive prior-art and evidence gates.
+
 ## Execution choices
 
 - Use web authors for heavy literature review, multi-source research,

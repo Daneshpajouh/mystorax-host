@@ -1,6 +1,6 @@
 {
   "name": "mystorax-host",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "Front-neutral MystoraX access with one universal skill and one consolidated Science skill.",
   "author": {
     "name": "MystoraX"

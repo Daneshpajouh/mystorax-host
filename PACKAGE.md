@@ -1,4 +1,4 @@
-# MystoraX host package 3.0.0
+# MystoraX host package 3.1.0
 
 This repository is the front distribution package, not a second runtime or
 capability catalog.

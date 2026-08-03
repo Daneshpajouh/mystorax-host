@@ -1,6 +1,6 @@
 {
   "schema": "mystorax.host.modules.v2",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "authority": {
     "capabilities": "https://mystorax-api.parallex.ca/capabilities",
     "mcp": "https://mystorax-api.parallex.ca/mcp"
