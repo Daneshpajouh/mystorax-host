@@ -1,0 +1,4 @@
+interface:
+  display_name: "MystoraX Science"
+  short_description: "Use verified scientific tools and web research"
+  default_prompt: "Use $use-mystorax-science to route this task through the current specialist catalog, delegate heavy research to verified web authors, and preserve evidence and provenance."

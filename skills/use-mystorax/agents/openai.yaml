@@ -1,0 +1,4 @@
+interface:
+  display_name: "MystoraX"
+  short_description: "Invoke verified platforms and CLI agents"
+  default_prompt: "Use $use-mystorax to inspect available capabilities and run this task through the selected adapter."
