@@ -33,6 +33,35 @@ Authorization: Bearer <token>
 Content-Type: application/json
 ```
 
+## What to spend, and what to spend it on
+
+Treat yourself as an orchestrator and the web authors as the workforce. The
+economics are asymmetric and worth stating plainly, because the intuition most
+fronts arrive with is backwards:
+
+**Your own context is the scarce budget. Theirs is not.** The web authors bill
+against a subscription, not per token. Reading a long document, sweeping a
+literature, drafting a first version, comparing many sources — that work is
+close to free there and expensive here. What is genuinely yours is deciding
+what to ask, judging what comes back, and reconciling authors that disagree.
+Doing an author's work yourself spends the one budget that runs out.
+
+**Their limits are burst-shaped, not volume-shaped.** A generous account
+rate-limits when hit hard in a short window, then recovers; it does not
+deplete. The correct response to `rate_limited` is to pace and honour
+`retry_after_s`, never to delegate less. And because fan-out to the *same*
+author serialises on one account lock, breadth across several authors is both
+faster and gentler than depth against one.
+
+**The exceptions are real and stay expensive.** A mode, model or operation the
+payload marks metered spends a limited allowance regardless of how cheap the
+rest of that adapter is. Read the adapter's own cautions before treating
+anything as free — that is where the metered surfaces are named.
+
+So the default shape of a consequential task is: you plan it, one or more web
+authors do the bulk, a CLI adapter touches this machine only where local
+execution is genuinely required, and you audit and reconcile the results.
+
 ## Quickstart (text-only, 4 steps)
 
 The minimum to make a first successful call. The detailed rules that follow
@@ -444,9 +473,13 @@ Treat a metered value as opt-in only. Select it when the caller actually asked
 for that depth, pass the acknowledgement the catalog names, and say plainly
 that it consumes budget. Never select one to satisfy a vague request for
 thoroughness, never let `auto` reach it, and never retry it after a failure —
-a retry spends the allowance again. A request that names a metered value
-without its acknowledgement is rejected before dispatch, which is a request
-construction error to repair, not a provider failure.
+a retry spends the allowance again.
+
+How a metered value is gated differs by adapter, so read the one you are calling
+rather than assuming. Some name an acknowledgement option and reject a request
+that omits it before dispatch — a refusal that costs nothing. Others are opt-in
+by selection alone: choosing the value IS the acknowledgement, nothing stops you,
+and the budget is spent. Treat the second kind with more care, not less.
 
 ## Attachments
 
@@ -520,23 +553,39 @@ support is absent or delivery fails, stop and report the limitation.
 
 ## Job handling
 
-For research whose usefulness has mechanical minimums, include an optional
-`acceptance` object in `invoke`:
+**`min_characters` and `min_url_count` are removed.** They are still accepted so
+a front that sends them is not rejected mid-flight, and they decide nothing. Do
+not send them. They required a provider answer to clear a fixed floor, and
+answers legitimately vary: a question whose honest answer runs 748 characters
+was reported `incomplete` against a front's 4000, and a well-sourced answer
+citing four pages failed a threshold of five. Neither measured quality; both
+discarded finished work.
+
+Every job still reports what was delivered — `acceptance.text_characters`,
+`acceptance.unique_url_count`, and the job's `sources` — so a front that cares
+about sufficiency can read the numbers and judge for itself, which is the
+caller's job rather than the platform's.
+
+What remains in `acceptance` is coverage, not quantity:
 
 ```json
 {
-  "min_characters": 1200,
-  "min_url_count": 3,
   "required_url_domains": ["canada.ca", "td.com"],
+  "allowed_url_domains": [],
   "min_artifacts": 0
 }
 ```
 
-This checks only delivered length, unique parseable HTTP(S) URLs, exact-domain
-or subdomain coverage, and valid artifact count. It does **not** establish that
-a source is authoritative or that a claim is true. If a completed provider
-response misses a requested minimum, the job ends as `incomplete` with an
-`acceptance.unmet` ledger. MystoraX never retries or changes providers.
+Set these only when the caller named them. They check exact-domain or subdomain
+coverage and valid artifact count. They do **not** establish that a source is
+authoritative or that a claim is true. When one is unmet the job ends
+`incomplete` with an `acceptance.unmet` ledger and the answer still present —
+read it and judge whether the shortfall matters, rather than treating
+`incomplete` as a failed provider. MystoraX never retries or changes providers.
+
+`budget.max_time_s` follows the same rule: it is the caller's wall-clock budget,
+not a front default. Omit it when the caller imposed none. A cap invented by the
+front truncates open-ended provider work that would have finished.
 
 `POST /invoke` returns a public `job_id`. Use only that ID with:
 

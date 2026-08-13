@@ -58,6 +58,61 @@ universal structural research-register gate for each consequential author
 report; a provider's `completed` state means generation finished, not that the
 report is decision-ready.
 
+## Where the work goes
+
+The most common failure on this surface is a front doing the campaign itself and
+running out of context halfway. **The web authors are the workforce; the science
+adapter is a governed tool and compute surface, not a place to think.** Its
+operations resolve identifiers, search a curated catalog, record evidence and
+run approved compute. They do not read a hundred papers for you, and nothing
+here should be spent pretending otherwise.
+
+The economics are the reason, and they are asymmetric: your context is the
+budget that runs out, a web author's is not. So the default division is:
+
+- **Literature sweeps, prior-art prosecution, anything that must cite.** Use the
+  author whose corpus is peer-reviewed literature and whose answers carry native
+  paper citations with resolvable DOIs. That beats an open-web author for the
+  evidence ledger, and beats you doing it by hand by a wide margin. Its
+  unmetered modes are the default; the metered one is named in its own cautions.
+- **Open-web reconnaissance, current events, source-steered search, agentic
+  browsing.** Use the author that advertises source steering and a browsing
+  loop. This is where "has anyone shipped this yet" and "what does the vendor
+  actually say" get answered.
+- **Long synthesis, first drafts, reading a large corpus into a shape.** Use the
+  author advertising the deepest reasoning effort and connector-backed
+  retrieval. Give it the whole pile and ask for structure back.
+- **Adversarial verification.** Use a *different* author than the one that
+  produced the claim. Independence is the point; the same author checking its
+  own work is not a second opinion.
+
+Resolve which adapter currently provides each from `/capabilities`. This
+document names none on purpose -- an earlier version named them and kept
+pointing fronts at an adapter that had been withdrawn -- but the capability
+descriptions above are specific enough that the catalog answers unambiguously.
+
+Dispatch broadly rather than deeply. Several authors working different angles at
+once is faster than one author queried repeatedly, and gentler: fan-out to the
+same author serialises on a single account lock, and their limits are burst-
+shaped rather than volume-shaped, so pacing beats rationing.
+
+**A leg waits only for what it consumes.** Breadth is not the whole rule, and
+the missing half is when to hold. Reconciliation across sources genuinely needs
+every source, so it waits — that is a real dependency, not timidity. Verifying a
+single claim needs only that claim, so it goes the moment the claim lands, not
+after its siblings finish. Holding an independent leg behind an unrelated one is
+the common mistake and it costs wall clock for nothing.
+
+**Never idle while a long leg runs.** A deep reconciliation can take twenty
+minutes against sweeps that take one. That interval is yours: read the primary
+source, resolve the identifiers, build the baseline you will judge the answers
+against. Waiting for a provider is not a reason to stop working, and the
+verification you owe is precisely the work that does not depend on the answer.
+
+What stays with you: deciding what to ask, judging what comes back, reconciling
+authors that disagree, and refusing to promote a provider's confident prose into
+a verified claim. That last one is the whole job.
+
 ## Workflow
 
 1. Use the generic MystoraX `capabilities` tool or `GET /capabilities`.
@@ -123,6 +178,80 @@ Watch its metered option. A search mode marked in `metered_values` spends a
 small separate monthly allowance, so select it only when the caller explicitly
 asked for that depth, pass the acknowledgement the catalog names, and record
 that it was spent. Ordinary campaign work uses the unmetered proven mode.
+
+## The cost model is not the safety field
+
+Every catalogued operation carries a `safety` value, and it is tempting to read
+`read` as "free to call". It is not. `safety` describes whether an operation
+**mutates state**; it says nothing about whether it **costs money**, and six
+operations catalogued `read` are routed through the Science LLM bridge and bill
+the operator per call:
+
+```
+evidence.build
+hypotheses.generate  hypotheses.kill_test  hypotheses.rank
+hypotheses.stress_test  hypotheses.stress_test_batch
+```
+
+Do not call these to explore the surface, and never build an operation list by
+filtering on `safety` — that filter passes all six.
+
+The `safety` field does not mark them, but the platform does: read them from the
+receipt's excluded-operations block in the live capability payload rather than
+from the list above, so an operation added to that group later is not invisible
+to you. Use them when the campaign genuinely needs generated hypotheses or a
+built evidence card, and record that a paid call was spent, the same way a
+metered search mode is recorded.
+
+The distinction matters because everything else on this surface is recoverable
+by reading the catalog more carefully. A spent quota is not, and on a personal
+account it does not come back.
+
+## Calling an operation
+
+Four things the catalog will not teach by example:
+
+- `catalog_sha256` is required and must be read live from capabilities each
+  session. A remembered value is rejected once the catalog rotates — a safe
+  failure, but a wasted turn.
+- Arguments go in the `arguments` object **only**. The prompt text is never
+  folded in; an operation with a strict schema rejects the extra key and the
+  complaint it raises is about the injected argument rather than the real one.
+- Read a schema with `tools.describe` instead of guessing argument names. A
+  guessed name returns a refusal indistinguishable from a broken operation, and
+  that mistake has already made working operations look unusable here.
+- Mutating operations need `approved=true`, and it should be set only when the
+  caller asked for that specific action.
+
+### A catalog zero has two meanings
+
+`catalog.search` withholds records flagged for manual review. That is the right
+default — an unreviewed record should not come back looking verified — but it
+means "this catalogue has nothing" and "this catalogue has something nobody has
+reviewed" both arrive as `result_count=0`.
+
+When a query returns nothing and a gated record matched it, the response
+carries `withheld_pending_review: true`. Read it before reporting that the
+platform lacks a resource: the record exists, and the right move is to say it
+is gated rather than that it is missing.
+
+It is a boolean, and it is emitted **only on an empty result set** — so a zero
+without it is the honest one. Both of those are deliberate. An earlier version
+reported an exact count on every search, which turned it into an enumeration
+oracle: a broad query returned the size of the whole gated set, and narrowing
+the term counted down to its members. The count changed nothing a caller would
+do, so it was leverage without purpose.
+
+The same reasoning runs one level out: `catalog_size` tells you the index is not
+empty, and `catalog_scope` tells you what it is an index *of* — a zero for a
+physics query against a life-sciences-weighted index means **not covered**, not
+**not found**.
+
+Failures publish a fixed shape — `<exception>: <code>[: <outcome>]` — plus a
+`retryable` boolean to branch on. `outcome: not_found` and `not_implemented`
+are never retryable: the request itself is wrong, and repeating it is a spin.
+`code: unclassified` means the failure is real and its provenance is not
+knowable at the point it was caught; it is an honest value, not a gap.
 
 ## Portable specialist system
 
