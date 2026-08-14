@@ -561,10 +561,15 @@ was reported `incomplete` against a front's 4000, and a well-sourced answer
 citing four pages failed a threshold of five. Neither measured quality; both
 discarded finished work.
 
-Every job still reports what was delivered — `acceptance.text_characters`,
-`acceptance.unique_url_count`, and the job's `sources` — so a front that cares
-about sufficiency can read the numbers and judge for itself, which is the
-caller's job rather than the platform's.
+What a completed job returns is the answer in `output` and, where the adapter
+publishes them, the pages it cited in `citations`. Measure those directly if
+sufficiency matters to you — the length of the answer and the number of distinct
+citations are the same facts a minimum would have tested, decided by the caller
+rather than by the platform.
+
+`acceptance.text_characters` and `acceptance.unique_url_count` appear only when
+you send an `acceptance` object, because that block is what computes them. They
+are not on an ordinary job, so do not write a front that waits for them.
 
 What remains in `acceptance` is coverage, not quantity:
 
